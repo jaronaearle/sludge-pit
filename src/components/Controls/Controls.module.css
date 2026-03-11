@@ -1,0 +1,117 @@
+.controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.divider {
+  width: 1px;
+  height: 32px;
+  background: #404040;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+.select {
+  padding: 8px 12px;
+  font-size: 14px;
+  background: #2d2d2d;
+  color: #e0e0e0;
+  border: 1px solid #404040;
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 140px;
+}
+
+.select:hover {
+  border-color: #555;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.select option {
+  background: #2d2d2d;
+  color: #e0e0e0;
+}
+
+.select optgroup {
+  font-weight: 600;
+  color: #888;
+}
+
+.resetButton {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #404040;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.resetButton:hover {
+  background: #505050;
+  border-color: #666;
+}
+
+.resetButton:active {
+  background: #383838;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #b0b0b0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+.hint {
+  font-size: 11px;
+  color: #666;
+  font-style: italic;
+}
+
+.select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

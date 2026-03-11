@@ -1,0 +1,85 @@
+.keyReference {
+  background: #1e1e1e;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.keyRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.keyRow:last-child {
+  margin-bottom: 0;
+}
+
+.keyLabel {
+  width: 80px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e0e0e0;
+  flex-shrink: 0;
+}
+
+.chordsContainer {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chordColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 44px;
+  padding: 6px 8px;
+  background: #2a2a2a;
+  border-radius: 6px;
+}
+
+.romanNumeral {
+  font-size: 11px;
+  font-weight: 500;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.chordSymbol {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Chord quality colors */
+.major {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.minor {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.diminished {
+  color: #facc15;
+  background: rgba(250, 204, 21, 0.15);
+}
+
+.augmented {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.15);
+}
