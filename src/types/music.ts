@@ -18,7 +18,12 @@ export type NoteDisplayMode = 'all' | Note
 
 export type IntervalDisplayMode = 'none' | Interval
 
-export type ScaleType = 'none' | 'major' | 'natural_minor' | 'harmonic_minor' | 'melodic_minor'
+// For multiple interval selection
+export type SelectedIntervals = Interval[]
+
+export type ScaleType = 'none' | 'major' | 'natural_minor' | 'harmonic_minor' | 'melodic_minor' | 'pentatonic_major' | 'pentatonic_minor' | 'blues'
+
+export type DyadType = 'none' | 'minor_2nd' | 'major_2nd' | 'minor_3rd' | 'major_3rd' | 'perfect_4th' | 'tritone' | 'perfect_5th' | 'minor_6th' | 'major_6th' | 'minor_7th' | 'major_7th' | 'octave'
 
 export type TriadType = 'none' | 'major' | 'minor' | 'diminished' | 'augmented'
 
@@ -46,3 +51,5 @@ export interface FretPosition {
   fret: number
   note: Note
 }
+
+export type FretCount = 12 | 18 | 24

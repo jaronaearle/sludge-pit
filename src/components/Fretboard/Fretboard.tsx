@@ -1,23 +1,28 @@
-import { Note, IntervalDisplayMode, ScaleType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Interval } from '../../types/music'
-import { FRET_COUNT, getNoteAtFret, getInterval, INTERVAL_COLORS, isNoteInScale, getScaleDegree, isNoteInTriad, getTriadDegree, isNoteInSeventhChord, getSeventhChordDegree, isNoteInExtendedChord, getExtendedChordDegree, isNoteInMode, getModeDegree, getInversionBassIndex, getTriadNotes, getSeventhChordNotes, getExtendedChordNotes } from '../../utils/music'
+import { Note, SelectedIntervals, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Interval, FretCount } from '../../types/music'
+import { getNoteAtFret, getInterval, INTERVAL_COLORS, isNoteInScale, getScaleDegree, isNoteInDyad, getDyadDegree, isNoteInTriad, getTriadDegree, isNoteInSeventhChord, getSeventhChordDegree, isNoteInExtendedChord, getExtendedChordDegree, isNoteInMode, getModeDegree, getInversionBassIndex, getTriadNotes, getSeventhChordNotes, getExtendedChordNotes } from '../../utils/music'
 import styles from './Fretboard.module.css'
 
 interface FretboardProps {
   rootNote: Note
   showAllNotes: boolean
-  intervalDisplayMode: IntervalDisplayMode
+  showDegrees: boolean
+  selectedIntervals: SelectedIntervals
   scaleType: ScaleType
+  dyadType: DyadType
   triadType: TriadType
   seventhChordType: SeventhChordType
   extendedChordType: ExtendedChordType
   modeType: ModeType
   inversionType: InversionType
   tuning: Note[]
+  fretCount: FretCount
   label?: string
   compact?: boolean
 }
 
-const FRET_MARKERS = [3, 5, 7, 9, 12]
+// Standard fret markers (single dots and double dots at 12, 24)
+const FRET_MARKERS = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24]
+const DOUBLE_DOT_FRETS = [12, 24]
 
 // Colors for scale degrees (1-7)
 const SCALE_DEGREE_COLORS: Record<number, string> = {
@@ -56,7 +61,7 @@ const EXTENDED_CHORD_DEGREE_COLORS: Record<number, string> = {
   7: '#818cf8', // 13th - indigo
 }
 
-export function Fretboard({ rootNote, showAllNotes, intervalDisplayMode, scaleType, triadType, seventhChordType, extendedChordType, modeType, inversionType, tuning, label, compact = false }: FretboardProps) {
+export function Fretboard({ rootNote, showAllNotes, showDegrees, selectedIntervals, scaleType, dyadType, triadType, seventhChordType, extendedChordType, modeType, inversionType, tuning, fretCount, label, compact = false }: FretboardProps) {
   const getIntervalForNote = (note: Note): Interval => {
     return getInterval(rootNote, note)
   }
@@ -64,9 +69,12 @@ export function Fretboard({ rootNote, showAllNotes, intervalDisplayMode, scaleTy
   type NoteDisplayResult = {
     show: boolean
     isInterval: boolean
+    matchedInterval: Interval | null
     isRoot: boolean
     isScale: boolean
     scaleDegree: number | null
+    isDyad: boolean
+    dyadDegree: number | null
     isTriad: boolean
     triadDegree: number | null
     isSeventhChord: boolean
@@ -104,9 +112,12 @@ export function Fretboard({ rootNote, showAllNotes, intervalDisplayMode, scaleTy
     const baseResult = {
       show: false,
       isInterval: false,
+      matchedInterval: null as Interval | null,
       isRoot: false,
       isScale: false,
       scaleDegree: null as number | null,
+      isDyad: false,
+      dyadDegree: null as number | null,
       isTriad: false,
       triadDegree: null as number | null,
       isSeventhChord: false,
@@ -158,13 +169,21 @@ export function Fretboard({ rootNote, showAllNotes, intervalDisplayMode, scaleTy
       }
     }
 
-    // Check interval display - show both the interval AND the root notes
-    if (intervalDisplayMode !== 'none') {
-      const interval = getIntervalForNote(note)
-      if (interval === intervalDisplayMode) {
-        return { ...baseResult, show: true, isInterval: true }
+    // Check dyad display
+    if (dyadType !== 'none') {
+      if (isNoteInDyad(note, rootNote, dyadType)) {
+        const degree = getDyadDegree(note, rootNote, dyadType)
+        return { ...baseResult, show: true, isRoot: degree === 1, isDyad: true, dyadDegree: degree }
       }
-      // Also show root notes when an interval is selected
+    }
+
+    // Check interval display - show selected intervals AND the root notes
+    if (selectedIntervals.length > 0) {
+      const interval = getIntervalForNote(note)
+      if (selectedIntervals.includes(interval)) {
+        return { ...baseResult, show: true, isInterval: true, matchedInterval: interval }
+      }
+      // Also show root notes when intervals are selected
       if (note === rootNote) {
         return { ...baseResult, show: true, isRoot: true }
       }
@@ -195,11 +214,15 @@ export function Fretboard({ rootNote, showAllNotes, intervalDisplayMode, scaleTy
     if (display.isTriad && display.triadDegree !== null) {
       return TRIAD_DEGREE_COLORS[display.triadDegree]
     }
+    if (display.isDyad && display.dyadDegree !== null) {
+      // Dyads: root is red, second note is blue (like 5th in power chord)
+      return display.dyadDegree === 1 ? '#ef4444' : '#3b82f6'
+    }
     if (display.isRoot) {
       return INTERVAL_COLORS.unison
     }
-    if (display.isInterval && intervalDisplayMode !== 'none') {
-      return INTERVAL_COLORS[intervalDisplayMode]
+    if (display.isInterval && display.matchedInterval) {
+      return INTERVAL_COLORS[display.matchedInterval]
     }
     if (showAllNotes) {
       return '#ffffff'
@@ -207,12 +230,93 @@ export function Fretboard({ rootNote, showAllNotes, intervalDisplayMode, scaleTy
     return INTERVAL_COLORS.unison
   }
 
-  // Get the note class, adding bass indicator if needed
+  // Check if a scale/mode degree is a chord tone (1, 3, 5, 7)
+  const isChordTone = (degree: number | null): boolean => {
+    return degree === 1 || degree === 3 || degree === 5 || degree === 7
+  }
+
+  // Get the note class based on note type
   const getNoteClass = (display: NoteDisplayResult): string => {
-    if (display.isBassNote && inversionType !== 'root') {
-      return `${styles.note} ${styles.bassNote}`
+    const classes = [styles.note]
+
+    // Root notes get square shape
+    if (display.isRoot) {
+      classes.push(styles.rootNote)
     }
-    return styles.note
+
+    // Chord tones get glow effect
+    if (display.isScale && isChordTone(display.scaleDegree)) {
+      classes.push(styles.chordTone)
+    }
+    if (display.isMode && isChordTone(display.modeDegree)) {
+      classes.push(styles.chordTone)
+    }
+    // All dyad/triad/7th/extended chord notes are chord tones
+    if (display.isDyad || display.isTriad || display.isSeventhChord || display.isExtendedChord) {
+      classes.push(styles.chordTone)
+    }
+
+    // Bass note indicator for inversions
+    if (display.isBassNote && inversionType !== 'root') {
+      classes.push(styles.bassNote)
+    }
+
+    return classes.join(' ')
+  }
+
+  // Get display text for a note (note name or degree)
+  const getNoteDisplayText = (note: Note, display: NoteDisplayResult): string => {
+    if (!showDegrees) {
+      return note
+    }
+
+    // Show degree based on what's being displayed
+    if (display.isScale && display.scaleDegree !== null) {
+      return display.scaleDegree === 1 ? 'R' : String(display.scaleDegree)
+    }
+    if (display.isMode && display.modeDegree !== null) {
+      return display.modeDegree === 1 ? 'R' : String(display.modeDegree)
+    }
+    if (display.isDyad && display.dyadDegree !== null) {
+      if (display.dyadDegree === 1) return 'R'
+      // Map the second note based on dyad type
+      const dyadSecondNoteLabels: Record<string, string> = {
+        minor_2nd: 'b2',
+        major_2nd: '2',
+        minor_3rd: 'b3',
+        major_3rd: '3',
+        perfect_4th: '4',
+        tritone: 'b5',
+        perfect_5th: '5',
+        minor_6th: 'b6',
+        major_6th: '6',
+        minor_7th: 'b7',
+        major_7th: '7',
+        octave: '8',
+      }
+      return dyadSecondNoteLabels[dyadType] || '?'
+    }
+    if (display.isTriad && display.triadDegree !== null) {
+      // Triad degrees: 1=R, 2=3rd, 3=5th
+      const triadDegreeLabels = ['R', '3', '5']
+      return triadDegreeLabels[display.triadDegree - 1] || String(display.triadDegree)
+    }
+    if (display.isSeventhChord && display.seventhChordDegree !== null) {
+      // 7th chord degrees: 1=R, 2=3rd, 3=5th, 4=7th
+      const seventhDegreeLabels = ['R', '3', '5', '7']
+      return seventhDegreeLabels[display.seventhChordDegree - 1] || String(display.seventhChordDegree)
+    }
+    if (display.isExtendedChord && display.extendedChordDegree !== null) {
+      // Extended chord degrees: 1=R, 2=3rd, 3=5th, 4=7th, 5=9th, 6=11th, 7=13th
+      const extendedDegreeLabels = ['R', '3', '5', '7', '9', '11', '13']
+      return extendedDegreeLabels[display.extendedChordDegree - 1] || String(display.extendedChordDegree)
+    }
+    if (display.isRoot) {
+      return 'R'
+    }
+
+    // Fallback to note name
+    return note
   }
 
   const fretboardClass = compact
@@ -225,11 +329,11 @@ export function Fretboard({ rootNote, showAllNotes, intervalDisplayMode, scaleTy
       {/* Fret markers */}
       <div className={styles.fretMarkers}>
         <div className={styles.markerSpacer} /> {/* Space for nut */}
-        {Array.from({ length: FRET_COUNT }, (_, fret) => (
+        {Array.from({ length: fretCount }, (_, fret) => (
           <div key={fret} className={styles.markerCell}>
             {FRET_MARKERS.includes(fret + 1) && (
-              <div className={`${styles.marker} ${fret + 1 === 12 ? styles.doubleMarker : ''}`}>
-                {fret + 1 === 12 ? (
+              <div className={`${styles.marker} ${DOUBLE_DOT_FRETS.includes(fret + 1) ? styles.doubleMarker : ''}`}>
+                {DOUBLE_DOT_FRETS.includes(fret + 1) ? (
                   <>
                     <span className={styles.dot} />
                     <span className={styles.dot} />
@@ -255,7 +359,7 @@ export function Fretboard({ rootNote, showAllNotes, intervalDisplayMode, scaleTy
                   className={getNoteClass(openNoteDisplay)}
                   style={{ backgroundColor: getNoteColor(openNoteDisplay) }}
                 >
-                  {openNote}
+                  {getNoteDisplayText(openNote, openNoteDisplay)}
                 </span>
               ) : (
                 <span className={styles.openNote}>{openNote}</span>
@@ -263,7 +367,7 @@ export function Fretboard({ rootNote, showAllNotes, intervalDisplayMode, scaleTy
             </div>
 
             {/* Frets */}
-            {Array.from({ length: FRET_COUNT }, (_, fret) => {
+            {Array.from({ length: fretCount }, (_, fret) => {
               const note = getNoteAtFret(openNote, fret + 1)
               const noteDisplay = shouldShowNote(note)
 
@@ -275,7 +379,7 @@ export function Fretboard({ rootNote, showAllNotes, intervalDisplayMode, scaleTy
                       className={getNoteClass(noteDisplay)}
                       style={{ backgroundColor: getNoteColor(noteDisplay) }}
                     >
-                      {note}
+                      {getNoteDisplayText(note, noteDisplay)}
                     </span>
                   )}
                 </div>
@@ -288,7 +392,7 @@ export function Fretboard({ rootNote, showAllNotes, intervalDisplayMode, scaleTy
       {/* Fret numbers */}
       <div className={styles.fretNumbers}>
         <div className={styles.numberSpacer} />
-        {Array.from({ length: FRET_COUNT }, (_, fret) => (
+        {Array.from({ length: fretCount }, (_, fret) => (
           <div key={fret} className={styles.fretNumber}>
             {fret + 1}
           </div>

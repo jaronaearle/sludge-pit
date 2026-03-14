@@ -25,24 +25,58 @@
 }
 
 .segment:hover {
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
-.majorSegment {
+/* Outer ring - Major keys */
+.keySegment {
   fill: #2d4a6d;
   stroke: #1e1e1e;
   stroke-width: 2;
   transition: fill 0.2s;
 }
 
-.majorSegment:hover {
+.keySegment:hover {
   fill: #3d5a7d;
 }
 
-.majorSegment.selected {
+.keySegment.selected {
   fill: #3b82f6;
 }
 
+/* Second ring - Sharps */
+.sharpsSegment {
+  fill: #4a5c3a;
+  stroke: #1e1e1e;
+  stroke-width: 2;
+  transition: fill 0.2s;
+}
+
+.sharpsSegment:hover {
+  fill: #5a6c4a;
+}
+
+.sharpsSelected {
+  fill: #22c55e;
+}
+
+/* Third ring - Flats */
+.flatsSegment {
+  fill: #5c4a3a;
+  stroke: #1e1e1e;
+  stroke-width: 2;
+  transition: fill 0.2s;
+}
+
+.flatsSegment:hover {
+  fill: #6c5a4a;
+}
+
+.flatsSelected {
+  fill: #f59e0b;
+}
+
+/* Inner ring - Relative minor */
 .minorSegment {
   fill: #4a3a5c;
   stroke: #1e1e1e;
@@ -54,12 +88,39 @@
   fill: #5a4a6c;
 }
 
-.minorSegment.selected {
+.minorSelected {
   fill: #a855f7;
 }
 
-.majorLabel {
+/* Labels */
+.keyLabel {
   fill: #c0d0e0;
+  font-size: 14px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+  user-select: none;
+}
+
+.enharmonicLabel {
+  font-size: 11px;
+  font-weight: 400;
+  fill: #90a0b0;
+}
+
+.sharpsLabel {
+  fill: #b0d0a0;
+  font-size: 13px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+  user-select: none;
+}
+
+.flatsLabel {
+  fill: #e0c0a0;
   font-size: 13px;
   font-weight: 600;
   text-anchor: middle;
@@ -70,7 +131,7 @@
 
 .minorLabel {
   fill: #c0b0d0;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   text-anchor: middle;
   dominant-baseline: middle;
@@ -88,12 +149,15 @@
   stroke-width: 2;
 }
 
+/* Legend */
 .legend {
   display: flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
   margin-top: 16px;
   font-size: 12px;
   color: #888;
+  justify-content: center;
 }
 
 .legendItem {
@@ -102,11 +166,25 @@
   gap: 6px;
 }
 
-.majorDot {
+.keyDot {
   width: 12px;
   height: 12px;
   border-radius: 2px;
   background: #2d4a6d;
+}
+
+.sharpsDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: #4a5c3a;
+}
+
+.flatsDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: #5c4a3a;
 }
 
 .minorDot {

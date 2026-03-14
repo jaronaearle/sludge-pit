@@ -1,4 +1,4 @@
-import { Note, Interval, ScaleType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Tuning, TuningId } from '../types/music'
+import { Note, Interval, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Tuning, TuningId } from '../types/music'
 
 export const NOTES: Note[] = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
@@ -99,6 +99,9 @@ export const SCALE_PATTERNS: Record<Exclude<ScaleType, 'none'>, number[]> = {
   natural_minor: [0, 2, 3, 5, 7, 8, 10],   // W-H-W-W-H-W-W
   harmonic_minor: [0, 2, 3, 5, 7, 8, 11],  // W-H-W-W-H-WH-H
   melodic_minor: [0, 2, 3, 5, 7, 9, 11],   // W-H-W-W-W-W-H (ascending)
+  pentatonic_major: [0, 2, 4, 7, 9],       // 1-2-3-5-6
+  pentatonic_minor: [0, 3, 5, 7, 10],      // 1-b3-4-5-b7
+  blues: [0, 3, 5, 6, 7, 10],              // 1-b3-4-b5-5-b7
 }
 
 export const SCALE_LABELS: Record<Exclude<ScaleType, 'none'>, string> = {
@@ -106,6 +109,9 @@ export const SCALE_LABELS: Record<Exclude<ScaleType, 'none'>, string> = {
   natural_minor: 'Natural Minor',
   harmonic_minor: 'Harmonic Minor',
   melodic_minor: 'Melodic Minor',
+  pentatonic_major: 'Pentatonic Major',
+  pentatonic_minor: 'Pentatonic Minor',
+  blues: 'Blues',
 }
 
 export const SCALE_TYPES: Exclude<ScaleType, 'none'>[] = [
@@ -113,6 +119,9 @@ export const SCALE_TYPES: Exclude<ScaleType, 'none'>[] = [
   'natural_minor',
   'harmonic_minor',
   'melodic_minor',
+  'pentatonic_major',
+  'pentatonic_minor',
+  'blues',
 ]
 
 export function getScaleNotes(root: Note, scaleType: Exclude<ScaleType, 'none'>): Note[] {
@@ -129,6 +138,69 @@ export function isNoteInScale(note: Note, root: Note, scaleType: Exclude<ScaleTy
 export function getScaleDegree(note: Note, root: Note, scaleType: Exclude<ScaleType, 'none'>): number | null {
   const scaleNotes = getScaleNotes(root, scaleType)
   const index = scaleNotes.indexOf(note)
+  return index === -1 ? null : index + 1
+}
+
+// Dyad patterns as semitone intervals from root
+export const DYAD_PATTERNS: Record<Exclude<DyadType, 'none'>, number[]> = {
+  minor_2nd: [0, 1],      // Root, Minor 2nd
+  major_2nd: [0, 2],      // Root, Major 2nd
+  minor_3rd: [0, 3],      // Root, Minor 3rd
+  major_3rd: [0, 4],      // Root, Major 3rd
+  perfect_4th: [0, 5],    // Root, Perfect 4th
+  tritone: [0, 6],        // Root, Tritone (b5/#4)
+  perfect_5th: [0, 7],    // Root, Perfect 5th
+  minor_6th: [0, 8],      // Root, Minor 6th
+  major_6th: [0, 9],      // Root, Major 6th
+  minor_7th: [0, 10],     // Root, Minor 7th
+  major_7th: [0, 11],     // Root, Major 7th
+  octave: [0, 12],        // Root, Octave
+}
+
+export const DYAD_LABELS: Record<Exclude<DyadType, 'none'>, string> = {
+  minor_2nd: 'Minor 2nd',
+  major_2nd: 'Major 2nd',
+  minor_3rd: 'Minor 3rd',
+  major_3rd: 'Major 3rd',
+  perfect_4th: 'Perfect 4th',
+  tritone: 'Tritone (b5)',
+  perfect_5th: 'Perfect 5th (Power Chord)',
+  minor_6th: 'Minor 6th',
+  major_6th: 'Major 6th',
+  minor_7th: 'Minor 7th',
+  major_7th: 'Major 7th',
+  octave: 'Octave',
+}
+
+export const DYAD_TYPES: Exclude<DyadType, 'none'>[] = [
+  'minor_2nd',
+  'major_2nd',
+  'minor_3rd',
+  'major_3rd',
+  'perfect_4th',
+  'tritone',
+  'perfect_5th',
+  'minor_6th',
+  'major_6th',
+  'minor_7th',
+  'major_7th',
+  'octave',
+]
+
+export function getDyadNotes(root: Note, dyadType: Exclude<DyadType, 'none'>): Note[] {
+  const rootIndex = NOTES.indexOf(root)
+  const pattern = DYAD_PATTERNS[dyadType]
+  return pattern.map(semitones => NOTES[(rootIndex + semitones) % 12])
+}
+
+export function isNoteInDyad(note: Note, root: Note, dyadType: Exclude<DyadType, 'none'>): boolean {
+  const dyadNotes = getDyadNotes(root, dyadType)
+  return dyadNotes.includes(note)
+}
+
+export function getDyadDegree(note: Note, root: Note, dyadType: Exclude<DyadType, 'none'>): number | null {
+  const dyadNotes = getDyadNotes(root, dyadType)
+  const index = dyadNotes.indexOf(note)
   return index === -1 ? null : index + 1
 }
 
@@ -173,6 +245,30 @@ export function getTriadDegree(note: Note, root: Note, triadType: Exclude<TriadT
 
 // Circle of fifths order
 export const CIRCLE_OF_FIFTHS: Note[] = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#', 'F']
+
+// Circle of fifths with full data for each key
+export interface CircleOfFifthsKey {
+  key: string
+  enharmonic: string | null
+  sharps: number | null
+  flats: number | null
+  relativeMinor: string
+}
+
+export const CIRCLE_OF_FIFTHS_DATA: CircleOfFifthsKey[] = [
+  { key: 'C', enharmonic: null, sharps: 0, flats: 0, relativeMinor: 'Am' },
+  { key: 'G', enharmonic: null, sharps: 1, flats: null, relativeMinor: 'Em' },
+  { key: 'D', enharmonic: null, sharps: 2, flats: null, relativeMinor: 'Bm' },
+  { key: 'A', enharmonic: null, sharps: 3, flats: null, relativeMinor: 'F#m' },
+  { key: 'E', enharmonic: null, sharps: 4, flats: null, relativeMinor: 'C#m' },
+  { key: 'B', enharmonic: 'Cb', sharps: 5, flats: 7, relativeMinor: 'G#m' },
+  { key: 'F#', enharmonic: 'Gb', sharps: 6, flats: 6, relativeMinor: 'D#m' },
+  { key: 'Db', enharmonic: 'C#', sharps: 7, flats: 5, relativeMinor: 'Bbm' },
+  { key: 'Ab', enharmonic: null, sharps: null, flats: 4, relativeMinor: 'Fm' },
+  { key: 'Eb', enharmonic: null, sharps: null, flats: 3, relativeMinor: 'Cm' },
+  { key: 'Bb', enharmonic: null, sharps: null, flats: 2, relativeMinor: 'Gm' },
+  { key: 'F', enharmonic: null, sharps: null, flats: 1, relativeMinor: 'Dm' },
+]
 
 // Get relative minor for a major key
 export function getRelativeMinor(majorRoot: Note): Note {

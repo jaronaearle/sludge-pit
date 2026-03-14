@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Note, IntervalDisplayMode, ScaleType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, TuningId } from './types/music'
+import { Note, SelectedIntervals, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, TuningId, FretCount } from './types/music'
 import { Fretboard } from './components/Fretboard/Fretboard'
 import { Controls } from './components/Controls/Controls'
 import { KeyReference } from './components/KeyReference/KeyReference'
@@ -10,8 +10,10 @@ import styles from './App.module.css'
 function App() {
   const [rootNote, setRootNote] = useState<Note>('C')
   const [showAllNotes, setShowAllNotes] = useState(false)
-  const [intervalDisplayMode, setIntervalDisplayMode] = useState<IntervalDisplayMode>('none')
+  const [showDegrees, setShowDegrees] = useState(false)
+  const [selectedIntervals, setSelectedIntervals] = useState<SelectedIntervals>([])
   const [scaleType, setScaleType] = useState<ScaleType>('none')
+  const [dyadType, setDyadType] = useState<DyadType>('none')
   const [triadType, setTriadType] = useState<TriadType>('none')
   const [seventhChordType, setSeventhChordType] = useState<SeventhChordType>('none')
   const [extendedChordType, setExtendedChordType] = useState<ExtendedChordType>('none')
@@ -19,12 +21,15 @@ function App() {
   const [inversionType, setInversionType] = useState<InversionType>('root')
   const [tuningId, setTuningId] = useState<TuningId>('e_standard')
   const [showReference, setShowReference] = useState(false)
+  const [fretCount, setFretCount] = useState<FretCount>(12)
 
   const handleReset = () => {
     setRootNote('C')
     setShowAllNotes(false)
-    setIntervalDisplayMode('none')
+    setShowDegrees(false)
+    setSelectedIntervals([])
     setScaleType('none')
+    setDyadType('none')
     setTriadType('none')
     setSeventhChordType('none')
     setExtendedChordType('none')
@@ -32,6 +37,7 @@ function App() {
     setInversionType('root')
     setTuningId('e_standard')
     setShowReference(false)
+    setFretCount(12)
   }
 
   const currentTuning = TUNINGS[tuningId]
@@ -50,10 +56,14 @@ function App() {
           onRootNoteChange={setRootNote}
           showAllNotes={showAllNotes}
           onShowAllNotesChange={setShowAllNotes}
-          intervalDisplayMode={intervalDisplayMode}
-          onIntervalDisplayModeChange={setIntervalDisplayMode}
+          showDegrees={showDegrees}
+          onShowDegreesChange={setShowDegrees}
+          selectedIntervals={selectedIntervals}
+          onSelectedIntervalsChange={setSelectedIntervals}
           scaleType={scaleType}
           onScaleTypeChange={setScaleType}
+          dyadType={dyadType}
+          onDyadTypeChange={setDyadType}
           triadType={triadType}
           onTriadTypeChange={setTriadType}
           seventhChordType={seventhChordType}
@@ -68,6 +78,8 @@ function App() {
           onTuningChange={setTuningId}
           showReference={showReference}
           onShowReferenceChange={setShowReference}
+          fretCount={fretCount}
+          onFretCountChange={setFretCount}
           onReset={handleReset}
         />
 
@@ -77,14 +89,17 @@ function App() {
           <Fretboard
             rootNote={rootNote}
             showAllNotes={showAllNotes}
-            intervalDisplayMode={intervalDisplayMode}
+            showDegrees={showDegrees}
+            selectedIntervals={selectedIntervals}
             scaleType={scaleType}
+            dyadType={dyadType}
             triadType={triadType}
             seventhChordType={seventhChordType}
             extendedChordType={extendedChordType}
             modeType={modeType}
             inversionType={inversionType}
             tuning={referenceTuning.notes}
+            fretCount={fretCount}
             label="E Standard (Reference)"
             compact
           />
@@ -93,20 +108,24 @@ function App() {
         <Fretboard
           rootNote={rootNote}
           showAllNotes={showAllNotes}
-          intervalDisplayMode={intervalDisplayMode}
+          showDegrees={showDegrees}
+          selectedIntervals={selectedIntervals}
           scaleType={scaleType}
+          dyadType={dyadType}
           triadType={triadType}
           seventhChordType={seventhChordType}
           extendedChordType={extendedChordType}
           modeType={modeType}
           inversionType={inversionType}
           tuning={currentTuning.notes}
+          fretCount={fretCount}
           label={tuningId !== 'e_standard' ? currentTuning.name : undefined}
         />
 
         <CircleOfFifths
           selectedRoot={rootNote}
           onRootSelect={setRootNote}
+          onScaleTypeChange={setScaleType}
         />
       </main>
     </div>

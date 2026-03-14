@@ -116,6 +116,17 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Root notes are square */
+.rootNote {
+  border-radius: 4px;
+}
+
+/* Chord tones (R, 3rd, 5th, 7th) get a border */
+.chordTone {
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
 /* Bass note indicator for inversions */
 .bassNote {
   border: 3px solid #fff;
@@ -195,6 +206,10 @@
   width: 20px;
   height: 20px;
   font-size: 9px;
+}
+
+.compact .rootNote {
+  border-radius: 3px;
 }
 
 .compact .openNote {
