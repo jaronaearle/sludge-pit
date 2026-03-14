@@ -1,4 +1,4 @@
-import { Note, Interval, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Tuning, TuningId } from '../types/music'
+import { Note, Interval, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Tuning, TuningId, CAGEDShape } from '../types/music'
 
 export const NOTES: Note[] = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
@@ -210,6 +210,8 @@ export const TRIAD_PATTERNS: Record<Exclude<TriadType, 'none'>, number[]> = {
   minor: [0, 3, 7],       // Root, Minor 3rd, Perfect 5th
   diminished: [0, 3, 6],  // Root, Minor 3rd, Diminished 5th
   augmented: [0, 4, 8],   // Root, Major 3rd, Augmented 5th
+  sus2: [0, 2, 7],        // Root, Major 2nd, Perfect 5th
+  sus4: [0, 5, 7],        // Root, Perfect 4th, Perfect 5th
 }
 
 export const TRIAD_LABELS: Record<Exclude<TriadType, 'none'>, string> = {
@@ -217,6 +219,8 @@ export const TRIAD_LABELS: Record<Exclude<TriadType, 'none'>, string> = {
   minor: 'Minor',
   diminished: 'Diminished',
   augmented: 'Augmented',
+  sus2: 'Suspended 2nd',
+  sus4: 'Suspended 4th',
 }
 
 export const TRIAD_TYPES: Exclude<TriadType, 'none'>[] = [
@@ -224,6 +228,8 @@ export const TRIAD_TYPES: Exclude<TriadType, 'none'>[] = [
   'minor',
   'diminished',
   'augmented',
+  'sus2',
+  'sus4',
 ]
 
 export function getTriadNotes(root: Note, triadType: Exclude<TriadType, 'none'>): Note[] {
@@ -256,7 +262,7 @@ export interface CircleOfFifthsKey {
 }
 
 export const CIRCLE_OF_FIFTHS_DATA: CircleOfFifthsKey[] = [
-  { key: 'C', enharmonic: null, sharps: 0, flats: 0, relativeMinor: 'Am' },
+  { key: 'C', enharmonic: null, sharps: null, flats: null, relativeMinor: 'Am' },
   { key: 'G', enharmonic: null, sharps: 1, flats: null, relativeMinor: 'Em' },
   { key: 'D', enharmonic: null, sharps: 2, flats: null, relativeMinor: 'Bm' },
   { key: 'A', enharmonic: null, sharps: 3, flats: null, relativeMinor: 'F#m' },
@@ -289,6 +295,10 @@ export const SEVENTH_CHORD_PATTERNS: Record<Exclude<SeventhChordType, 'none'>, n
   dominant7: [0, 4, 7, 10],        // Root, Major 3rd, Perfect 5th, Minor 7th
   diminished7: [0, 3, 6, 9],       // Root, Minor 3rd, Diminished 5th, Diminished 7th
   half_diminished7: [0, 3, 6, 10], // Root, Minor 3rd, Diminished 5th, Minor 7th (m7♭5)
+  minMaj7: [0, 3, 7, 11],          // Root, Minor 3rd, Perfect 5th, Major 7th
+  aug7: [0, 4, 8, 10],             // Root, Major 3rd, Augmented 5th, Minor 7th (7#5)
+  '7sus4': [0, 5, 7, 10],          // Root, Perfect 4th, Perfect 5th, Minor 7th
+  '7b5': [0, 4, 6, 10],            // Root, Major 3rd, Diminished 5th, Minor 7th
 }
 
 export const SEVENTH_CHORD_LABELS: Record<Exclude<SeventhChordType, 'none'>, string> = {
@@ -296,7 +306,11 @@ export const SEVENTH_CHORD_LABELS: Record<Exclude<SeventhChordType, 'none'>, str
   minor7: 'Minor 7th',
   dominant7: 'Dominant 7th',
   diminished7: 'Diminished 7th',
-  half_diminished7: 'Half-Diminished 7th (m7♭5)',
+  half_diminished7: 'Half-Dim 7th (m7♭5)',
+  minMaj7: 'Minor-Major 7th',
+  aug7: 'Augmented 7th (7#5)',
+  '7sus4': '7sus4',
+  '7b5': '7♭5',
 }
 
 export const SEVENTH_CHORD_TYPES: Exclude<SeventhChordType, 'none'>[] = [
@@ -305,6 +319,10 @@ export const SEVENTH_CHORD_TYPES: Exclude<SeventhChordType, 'none'>[] = [
   'dominant7',
   'diminished7',
   'half_diminished7',
+  'minMaj7',
+  'aug7',
+  '7sus4',
+  '7b5',
 ]
 
 export function getSeventhChordNotes(root: Note, chordType: Exclude<SeventhChordType, 'none'>): Note[] {
@@ -376,26 +394,42 @@ export function getModeDegree(note: Note, root: Note, modeType: Exclude<ModeType
 // 9th = 14 semitones (octave + major 2nd), 11th = 17 semitones (octave + perfect 4th), 13th = 21 semitones (octave + major 6th)
 // We use mod 12 to keep within one octave for fretboard display
 export const EXTENDED_CHORD_PATTERNS: Record<Exclude<ExtendedChordType, 'none'>, number[]> = {
+  // Add chords (triad + extension, no 7th)
+  add9: [0, 4, 7, 2],             // Major triad + 9th
+  madd9: [0, 3, 7, 2],            // Minor triad + 9th
+
+  // 6th chords
+  '6': [0, 4, 7, 9],              // Major triad + Major 6th
+  m6: [0, 3, 7, 9],               // Minor triad + Major 6th
+
   // 9th chords (Root, 3rd, 5th, 7th, 9th)
-  major9: [0, 4, 7, 11, 2],      // Maj7 + Major 9th (14 % 12 = 2)
-  minor9: [0, 3, 7, 10, 2],      // Min7 + Major 9th
-  dominant9: [0, 4, 7, 10, 2],   // Dom7 + Major 9th
+  major9: [0, 4, 7, 11, 2],       // Maj7 + Major 9th (14 % 12 = 2)
+  minor9: [0, 3, 7, 10, 2],       // Min7 + Major 9th
+  dominant9: [0, 4, 7, 10, 2],    // Dom7 + Major 9th
+
+  // Altered dominant
+  '7sharp9': [0, 4, 7, 10, 3],    // Dom7 + #9 (Hendrix chord) - 3 is enharmonic to #9
 
   // 11th chords (Root, 3rd, 5th, 7th, 9th, 11th)
-  major11: [0, 4, 7, 11, 2, 5],     // Maj9 + Perfect 11th (17 % 12 = 5)
-  minor11: [0, 3, 7, 10, 2, 5],     // Min9 + Perfect 11th
-  dominant11: [0, 4, 7, 10, 2, 5],  // Dom9 + Perfect 11th
+  major11: [0, 4, 7, 11, 2, 5],   // Maj9 + Perfect 11th (17 % 12 = 5)
+  minor11: [0, 3, 7, 10, 2, 5],   // Min9 + Perfect 11th
+  dominant11: [0, 4, 7, 10, 2, 5],// Dom9 + Perfect 11th
 
   // 13th chords (Root, 3rd, 5th, 7th, 9th, 11th, 13th)
-  major13: [0, 4, 7, 11, 2, 5, 9],     // Maj11 + Major 13th (21 % 12 = 9)
-  minor13: [0, 3, 7, 10, 2, 5, 9],     // Min11 + Major 13th
-  dominant13: [0, 4, 7, 10, 2, 5, 9],  // Dom11 + Major 13th
+  major13: [0, 4, 7, 11, 2, 5, 9],   // Maj11 + Major 13th (21 % 12 = 9)
+  minor13: [0, 3, 7, 10, 2, 5, 9],   // Min11 + Major 13th
+  dominant13: [0, 4, 7, 10, 2, 5, 9],// Dom11 + Major 13th
 }
 
 export const EXTENDED_CHORD_LABELS: Record<Exclude<ExtendedChordType, 'none'>, string> = {
+  add9: 'Add 9',
+  madd9: 'Minor Add 9',
+  '6': 'Major 6th',
+  m6: 'Minor 6th',
   major9: 'Major 9th',
   minor9: 'Minor 9th',
   dominant9: 'Dominant 9th',
+  '7sharp9': '7#9 (Hendrix)',
   major11: 'Major 11th',
   minor11: 'Minor 11th',
   dominant11: 'Dominant 11th',
@@ -405,9 +439,14 @@ export const EXTENDED_CHORD_LABELS: Record<Exclude<ExtendedChordType, 'none'>, s
 }
 
 export const EXTENDED_CHORD_TYPES: Exclude<ExtendedChordType, 'none'>[] = [
+  'add9',
+  'madd9',
+  '6',
+  'm6',
   'major9',
   'minor9',
   'dominant9',
+  '7sharp9',
   'major11',
   'minor11',
   'dominant11',
@@ -525,4 +564,247 @@ export function getChordsInMinorKey(root: Note): KeyChord[] {
 export function getChordSymbol(chord: KeyChord): string {
   const qualitySuffix = chord.quality === 'minor' ? 'm' : chord.quality === 'diminished' ? '°' : ''
   return `${chord.root}${qualitySuffix}`
+}
+
+// Chord Voicings
+// Each voicing is an array of 6 values (low E to high E)
+// -1 = muted, 0 = open, positive number = fret
+export interface ChordVoicing {
+  name: string
+  frets: number[]  // 6 values, low E to high E
+  baseFret: number // The lowest fret in the diagram (for movable shapes)
+  cagedShape?: CAGEDShape // Which CAGED shape this voicing corresponds to
+}
+
+// Open chord voicings (root position, played at the nut)
+export const OPEN_CHORD_VOICINGS: Record<string, ChordVoicing[]> = {
+  // Major chords
+  'C_major': [
+    { name: 'Open C', frets: [-1, 3, 2, 0, 1, 0], baseFret: 1, cagedShape: 'C' },
+  ],
+  'A_major': [
+    { name: 'Open A', frets: [-1, 0, 2, 2, 2, 0], baseFret: 1, cagedShape: 'A' },
+  ],
+  'G_major': [
+    { name: 'Open G', frets: [3, 2, 0, 0, 0, 3], baseFret: 1, cagedShape: 'G' },
+  ],
+  'E_major': [
+    { name: 'Open E', frets: [0, 2, 2, 1, 0, 0], baseFret: 1, cagedShape: 'E' },
+  ],
+  'D_major': [
+    { name: 'Open D', frets: [-1, -1, 0, 2, 3, 2], baseFret: 1, cagedShape: 'D' },
+  ],
+  // Minor chords
+  'A_minor': [
+    { name: 'Open Am', frets: [-1, 0, 2, 2, 1, 0], baseFret: 1, cagedShape: 'A' },
+  ],
+  'E_minor': [
+    { name: 'Open Em', frets: [0, 2, 2, 0, 0, 0], baseFret: 1, cagedShape: 'E' },
+  ],
+  'D_minor': [
+    { name: 'Open Dm', frets: [-1, -1, 0, 2, 3, 1], baseFret: 1, cagedShape: 'D' },
+  ],
+  // Suspended chords
+  'A_sus2': [
+    { name: 'Open Asus2', frets: [-1, 0, 2, 2, 0, 0], baseFret: 1, cagedShape: 'A' },
+  ],
+  'D_sus2': [
+    { name: 'Open Dsus2', frets: [-1, -1, 0, 2, 3, 0], baseFret: 1, cagedShape: 'D' },
+  ],
+  'E_sus2': [
+    { name: 'Open Esus2', frets: [0, 2, 4, 4, 0, 0], baseFret: 1, cagedShape: 'E' },
+  ],
+  'A_sus4': [
+    { name: 'Open Asus4', frets: [-1, 0, 2, 2, 3, 0], baseFret: 1, cagedShape: 'A' },
+  ],
+  'D_sus4': [
+    { name: 'Open Dsus4', frets: [-1, -1, 0, 2, 3, 3], baseFret: 1, cagedShape: 'D' },
+  ],
+  'E_sus4': [
+    { name: 'Open Esus4', frets: [0, 2, 2, 2, 0, 0], baseFret: 1, cagedShape: 'E' },
+  ],
+  // 7th chords
+  'A_dominant7': [
+    { name: 'Open A7', frets: [-1, 0, 2, 0, 2, 0], baseFret: 1, cagedShape: 'A' },
+  ],
+  'E_dominant7': [
+    { name: 'Open E7', frets: [0, 2, 0, 1, 0, 0], baseFret: 1, cagedShape: 'E' },
+  ],
+  'D_dominant7': [
+    { name: 'Open D7', frets: [-1, -1, 0, 2, 1, 2], baseFret: 1, cagedShape: 'D' },
+  ],
+  'G_dominant7': [
+    { name: 'Open G7', frets: [3, 2, 0, 0, 0, 1], baseFret: 1, cagedShape: 'G' },
+  ],
+  'C_major7': [
+    { name: 'Open Cmaj7', frets: [-1, 3, 2, 0, 0, 0], baseFret: 1, cagedShape: 'C' },
+  ],
+  'A_minor7': [
+    { name: 'Open Am7', frets: [-1, 0, 2, 0, 1, 0], baseFret: 1, cagedShape: 'A' },
+  ],
+  'E_minor7': [
+    { name: 'Open Em7', frets: [0, 2, 0, 0, 0, 0], baseFret: 1, cagedShape: 'E' },
+  ],
+  'D_minor7': [
+    { name: 'Open Dm7', frets: [-1, -1, 0, 2, 1, 1], baseFret: 1, cagedShape: 'D' },
+  ],
+}
+
+// Movable barre chord shapes (relative to root)
+// These are templates that get transposed based on root note
+export const BARRE_CHORD_SHAPES: Record<string, ChordVoicing[]> = {
+  'major': [
+    { name: 'E Shape Barre', frets: [0, 2, 2, 1, 0, 0], baseFret: 0, cagedShape: 'E' },
+    { name: 'A Shape Barre', frets: [-1, 0, 2, 2, 2, 0], baseFret: 0, cagedShape: 'A' },
+  ],
+  'minor': [
+    { name: 'Em Shape Barre', frets: [0, 2, 2, 0, 0, 0], baseFret: 0, cagedShape: 'E' },
+    { name: 'Am Shape Barre', frets: [-1, 0, 2, 2, 1, 0], baseFret: 0, cagedShape: 'A' },
+  ],
+  'sus2': [
+    { name: 'Sus2 (E Shape)', frets: [0, 2, 2, 2, 0, 0], baseFret: 0, cagedShape: 'E' },
+    { name: 'Sus2 (A Shape)', frets: [-1, 0, 2, 2, 0, 0], baseFret: 0, cagedShape: 'A' },
+  ],
+  'sus4': [
+    { name: 'Sus4 (E Shape)', frets: [0, 2, 2, 2, 0, 0], baseFret: 0, cagedShape: 'E' },
+    { name: 'Sus4 (A Shape)', frets: [-1, 0, 2, 2, 3, 0], baseFret: 0, cagedShape: 'A' },
+  ],
+  'dominant7': [
+    { name: 'E7 Shape', frets: [0, 2, 0, 1, 0, 0], baseFret: 0, cagedShape: 'E' },
+    { name: 'A7 Shape', frets: [-1, 0, 2, 0, 2, 0], baseFret: 0, cagedShape: 'A' },
+  ],
+  'minor7': [
+    { name: 'Em7 Shape', frets: [0, 2, 0, 0, 0, 0], baseFret: 0, cagedShape: 'E' },
+    { name: 'Am7 Shape', frets: [-1, 0, 2, 0, 1, 0], baseFret: 0, cagedShape: 'A' },
+  ],
+  'major7': [
+    { name: 'Maj7 (E Shape)', frets: [0, 2, 1, 1, 0, 0], baseFret: 0, cagedShape: 'E' },
+    { name: 'Maj7 (A Shape)', frets: [-1, 0, 2, 1, 2, 0], baseFret: 0, cagedShape: 'A' },
+  ],
+  'minMaj7': [
+    { name: 'mMaj7 (E Shape)', frets: [0, 2, 1, 0, 0, 0], baseFret: 0, cagedShape: 'E' },
+    { name: 'mMaj7 (A Shape)', frets: [-1, 0, 2, 1, 1, 0], baseFret: 0, cagedShape: 'A' },
+  ],
+  '7sus4': [
+    { name: '7sus4 (E Shape)', frets: [0, 2, 0, 2, 0, 0], baseFret: 0, cagedShape: 'E' },
+    { name: '7sus4 (A Shape)', frets: [-1, 0, 2, 0, 3, 0], baseFret: 0, cagedShape: 'A' },
+  ],
+  'diminished': [
+    { name: 'Dim (movable)', frets: [-1, -1, 0, 1, 0, 1], baseFret: 0 },
+  ],
+  'diminished7': [
+    { name: 'Dim7 (movable)', frets: [-1, -1, 0, 1, 0, 1], baseFret: 0 },
+  ],
+  'augmented': [
+    { name: 'Aug (movable)', frets: [-1, -1, 2, 1, 1, 0], baseFret: 0 },
+  ],
+  'aug7': [
+    { name: 'Aug7 (movable)', frets: [-1, -1, 0, 1, 1, 0], baseFret: 0 },
+  ],
+}
+
+// Power chord shapes
+export const POWER_CHORD_SHAPES: ChordVoicing[] = [
+  { name: 'Power Chord (6th string)', frets: [0, 2, 2, -1, -1, -1], baseFret: 0 },
+  { name: 'Power Chord (5th string)', frets: [-1, 0, 2, 2, -1, -1], baseFret: 0 },
+]
+
+// Get voicings for a chord
+export function getChordVoicings(root: Note, chordType: TriadType | SeventhChordType): ChordVoicing[] {
+  const rootIndex = NOTES.indexOf(root)
+  const voicings: ChordVoicing[] = []
+
+  // Check for open chord voicings first
+  const openKey = `${root}_${chordType}`
+  if (OPEN_CHORD_VOICINGS[openKey]) {
+    voicings.push(...OPEN_CHORD_VOICINGS[openKey])
+  }
+
+  // Add transposed barre shapes
+  const barreShapes = BARRE_CHORD_SHAPES[chordType]
+  if (barreShapes) {
+    for (const shape of barreShapes) {
+      // Calculate the fret offset based on root note
+      let baseFret: number
+      if (shape.cagedShape === 'E') {
+        // E shape barre: root on 6th string
+        baseFret = rootIndex === 0 ? 12 : rootIndex // E is 0, so 0 means fret 12
+      } else if (shape.cagedShape === 'A') {
+        // A shape barre: root on 5th string
+        const aIndex = NOTES.indexOf('A')
+        baseFret = (rootIndex - aIndex + 12) % 12
+        if (baseFret === 0) baseFret = 12
+      } else {
+        baseFret = rootIndex
+      }
+
+      // Only add if it's not duplicating an open chord
+      if (baseFret > 1) {
+        const transposedFrets = shape.frets.map(f => f === -1 ? -1 : f + baseFret)
+        voicings.push({
+          ...shape,
+          frets: transposedFrets,
+          baseFret,
+        })
+      }
+    }
+  }
+
+  return voicings.slice(0, 4) // Return max 4 voicings
+}
+
+// CAGED System
+// Each shape is defined by:
+// - primaryString: the string where the root note is found (6=low E, 5=A, 4=D, 3=G, 2=B, 1=high E)
+// - rootOffset: how many frets from the start of the shape to the root
+// - fretSpan: total frets the shape covers
+export interface CAGEDShapeInfo {
+  name: CAGEDShape
+  primaryString: number  // 6=low E, 5=A, etc.
+  rootOffset: number     // frets from shape start to root
+  fretSpan: number       // total fret width
+  color: string          // display color
+}
+
+export const CAGED_SHAPES: Record<CAGEDShape, CAGEDShapeInfo> = {
+  E: { name: 'E', primaryString: 6, rootOffset: 0, fretSpan: 4, color: '#ef4444' },  // red
+  G: { name: 'G', primaryString: 6, rootOffset: 3, fretSpan: 4, color: '#22c55e' },  // green
+  D: { name: 'D', primaryString: 4, rootOffset: 0, fretSpan: 4, color: '#3b82f6' },  // blue
+  C: { name: 'C', primaryString: 5, rootOffset: 3, fretSpan: 4, color: '#facc15' },  // yellow
+  A: { name: 'A', primaryString: 5, rootOffset: 0, fretSpan: 4, color: '#a855f7' },  // purple
+}
+
+export const CAGED_SHAPE_ORDER: CAGEDShape[] = ['C', 'A', 'G', 'E', 'D']
+
+// Get the fret position where a CAGED shape starts for a given root note
+// Returns the starting fret of the shape box (0 = nut/open)
+export function getCAGEDShapePosition(rootNote: Note, shape: CAGEDShape, tuning: Note[]): number {
+  const shapeInfo = CAGED_SHAPES[shape]
+  const stringIndex = 6 - shapeInfo.primaryString // Convert to array index (0 = low E)
+  const openNote = tuning[stringIndex]
+
+  // Find where root note is on the primary string
+  const openNoteIndex = NOTES.indexOf(openNote)
+  const rootIndex = NOTES.indexOf(rootNote)
+  let rootFret = (rootIndex - openNoteIndex + 12) % 12
+
+  // The shape starts rootOffset frets before the root
+  let shapeStart = rootFret - shapeInfo.rootOffset
+
+  // Handle wrapping (if shape would start before nut, move up an octave)
+  if (shapeStart < 0) {
+    shapeStart += 12
+  }
+
+  return shapeStart
+}
+
+// Get the fret range for a CAGED shape
+export function getCAGEDShapeFretRange(rootNote: Note, shape: CAGEDShape, tuning: Note[]): { start: number, end: number } {
+  const shapeInfo = CAGED_SHAPES[shape]
+  const start = getCAGEDShapePosition(rootNote, shape, tuning)
+  return {
+    start,
+    end: start + shapeInfo.fretSpan - 1
+  }
 }

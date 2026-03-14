@@ -25,14 +25,17 @@ export type ScaleType = 'none' | 'major' | 'natural_minor' | 'harmonic_minor' | 
 
 export type DyadType = 'none' | 'minor_2nd' | 'major_2nd' | 'minor_3rd' | 'major_3rd' | 'perfect_4th' | 'tritone' | 'perfect_5th' | 'minor_6th' | 'major_6th' | 'minor_7th' | 'major_7th' | 'octave'
 
-export type TriadType = 'none' | 'major' | 'minor' | 'diminished' | 'augmented'
+export type TriadType = 'none' | 'major' | 'minor' | 'diminished' | 'augmented' | 'sus2' | 'sus4'
 
-export type SeventhChordType = 'none' | 'major7' | 'minor7' | 'dominant7' | 'diminished7' | 'half_diminished7'
+export type SeventhChordType = 'none'
+  | 'major7' | 'minor7' | 'dominant7' | 'diminished7' | 'half_diminished7'
+  | 'minMaj7' | 'aug7' | '7sus4' | '7b5'
 
 export type ExtendedChordType = 'none'
   | 'major9' | 'minor9' | 'dominant9'
   | 'major11' | 'minor11' | 'dominant11'
   | 'major13' | 'minor13' | 'dominant13'
+  | 'add9' | 'madd9' | '6' | 'm6' | '7sharp9'
 
 export type ModeType = 'none' | 'ionian' | 'dorian' | 'phrygian' | 'lydian' | 'mixolydian' | 'aeolian' | 'locrian'
 
@@ -53,3 +56,5 @@ export interface FretPosition {
 }
 
 export type FretCount = 12 | 18 | 24
+
+export type CAGEDShape = 'C' | 'A' | 'G' | 'E' | 'D'

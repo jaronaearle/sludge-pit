@@ -10,6 +10,7 @@ import {
   InversionType,
   TuningId,
   FretCount,
+  CAGEDShape,
 } from "../../types/music";
 import {
   NOTES,
@@ -32,6 +33,8 @@ import {
   TUNINGS,
   TUNING_IDS,
   supportsInversion,
+  CAGED_SHAPE_ORDER,
+  CAGED_SHAPES,
 } from "../../utils/music";
 import { CollapsibleSection } from "../CollapsibleSection/CollapsibleSection";
 import styles from "./Controls.module.css";
@@ -65,7 +68,13 @@ interface ControlsProps {
   onShowReferenceChange: (show: boolean) => void;
   fretCount: FretCount;
   onFretCountChange: (count: FretCount) => void;
+  showCAGED: boolean;
+  onShowCAGEDChange: (show: boolean) => void;
+  cagedShape: CAGEDShape | 'all';
+  onCagedShapeChange: (shape: CAGEDShape | 'all') => void;
   onReset: () => void;
+  onResetScales: () => void;
+  onResetChords: () => void;
 }
 
 export function Controls({
@@ -97,7 +106,13 @@ export function Controls({
   onShowReferenceChange,
   fretCount,
   onFretCountChange,
+  showCAGED,
+  onShowCAGEDChange,
+  cagedShape,
+  onCagedShapeChange,
   onReset,
+  onResetScales,
+  onResetChords,
 }: ControlsProps) {
   const hasChord =
     triadType !== "none" ||
@@ -190,6 +205,33 @@ export function Controls({
               Show degrees
             </label>
 
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={showCAGED}
+                onChange={(e) => onShowCAGEDChange(e.target.checked)}
+                className={styles.checkbox}
+              />
+              CAGED
+            </label>
+
+            {showCAGED && (
+              <select
+                className={styles.selectSmall}
+                value={cagedShape}
+                onChange={(e) =>
+                  onCagedShapeChange(e.target.value as CAGEDShape | 'all')
+                }
+              >
+                <option value="all">All</option>
+                {CAGED_SHAPE_ORDER.map((shape) => (
+                  <option key={shape} value={shape} style={{ color: CAGED_SHAPES[shape].color }}>
+                    {shape}
+                  </option>
+                ))}
+              </select>
+            )}
+
             <button className={styles.resetButton} onClick={onReset}>
               Reset
             </button>
@@ -232,6 +274,12 @@ export function Controls({
                 ))}
               </select>
             </label>
+
+            {(scaleType !== 'none' || modeType !== 'none') && (
+              <button className={styles.sectionResetButton} onClick={onResetScales}>
+                Clear
+              </button>
+            )}
           </div>
         </CollapsibleSection>
 
@@ -337,6 +385,11 @@ export function Controls({
               <span className={styles.hint}>
                 Select a chord to use inversions
               </span>
+            )}
+            {hasChord && (
+              <button className={styles.sectionResetButton} onClick={onResetChords}>
+                Clear
+              </button>
             )}
           </div>
         </CollapsibleSection>

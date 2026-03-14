@@ -1,9 +1,10 @@
-import { Note, SelectedIntervals, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Interval, FretCount } from '../../types/music'
-import { getNoteAtFret, getInterval, INTERVAL_COLORS, isNoteInScale, getScaleDegree, isNoteInDyad, getDyadDegree, isNoteInTriad, getTriadDegree, isNoteInSeventhChord, getSeventhChordDegree, isNoteInExtendedChord, getExtendedChordDegree, isNoteInMode, getModeDegree, getInversionBassIndex, getTriadNotes, getSeventhChordNotes, getExtendedChordNotes } from '../../utils/music'
+import { Note, SelectedIntervals, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Interval, FretCount, CAGEDShape } from '../../types/music'
+import { getNoteAtFret, getInterval, INTERVAL_COLORS, isNoteInScale, getScaleDegree, isNoteInDyad, getDyadDegree, isNoteInTriad, getTriadDegree, isNoteInSeventhChord, getSeventhChordDegree, isNoteInExtendedChord, getExtendedChordDegree, isNoteInMode, getModeDegree, getInversionBassIndex, getTriadNotes, getSeventhChordNotes, getExtendedChordNotes, CAGED_SHAPES, CAGED_SHAPE_ORDER, getCAGEDShapeFretRange } from '../../utils/music'
 import styles from './Fretboard.module.css'
 
 interface FretboardProps {
   rootNote: Note
+  chordRoot?: Note  // Separate root for chord display (defaults to rootNote)
   showAllNotes: boolean
   showDegrees: boolean
   selectedIntervals: SelectedIntervals
@@ -16,6 +17,8 @@ interface FretboardProps {
   inversionType: InversionType
   tuning: Note[]
   fretCount: FretCount
+  showCAGED?: boolean
+  cagedShape?: CAGEDShape | 'all'
   label?: string
   compact?: boolean
 }
@@ -61,7 +64,9 @@ const EXTENDED_CHORD_DEGREE_COLORS: Record<number, string> = {
   7: '#818cf8', // 13th - indigo
 }
 
-export function Fretboard({ rootNote, showAllNotes, showDegrees, selectedIntervals, scaleType, dyadType, triadType, seventhChordType, extendedChordType, modeType, inversionType, tuning, fretCount, label, compact = false }: FretboardProps) {
+export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, selectedIntervals, scaleType, dyadType, triadType, seventhChordType, extendedChordType, modeType, inversionType, tuning, fretCount, showCAGED = false, cagedShape = 'all', label, compact = false }: FretboardProps) {
+  // Use chordRoot for chord display, rootNote for scales/intervals
+  const effectiveChordRoot = chordRoot ?? rootNote
   const getIntervalForNote = (note: Note): Interval => {
     return getInterval(rootNote, note)
   }
@@ -91,15 +96,15 @@ export function Fretboard({ rootNote, showAllNotes, showDegrees, selectedInterva
     const bassIndex = getInversionBassIndex(inversionType)
 
     if (extendedChordType !== 'none') {
-      const notes = getExtendedChordNotes(rootNote, extendedChordType)
+      const notes = getExtendedChordNotes(effectiveChordRoot, extendedChordType)
       return bassIndex < notes.length ? notes[bassIndex] : null
     }
     if (seventhChordType !== 'none') {
-      const notes = getSeventhChordNotes(rootNote, seventhChordType)
+      const notes = getSeventhChordNotes(effectiveChordRoot, seventhChordType)
       return bassIndex < notes.length ? notes[bassIndex] : null
     }
     if (triadType !== 'none') {
-      const notes = getTriadNotes(rootNote, triadType)
+      const notes = getTriadNotes(effectiveChordRoot, triadType)
       return bassIndex < notes.length ? notes[bassIndex] : null
     }
     return null
@@ -145,34 +150,34 @@ export function Fretboard({ rootNote, showAllNotes, showDegrees, selectedInterva
       }
     }
 
-    // Check extended chord display
+    // Check extended chord display (use effectiveChordRoot for chords)
     if (extendedChordType !== 'none') {
-      if (isNoteInExtendedChord(note, rootNote, extendedChordType)) {
-        const degree = getExtendedChordDegree(note, rootNote, extendedChordType)
+      if (isNoteInExtendedChord(note, effectiveChordRoot, extendedChordType)) {
+        const degree = getExtendedChordDegree(note, effectiveChordRoot, extendedChordType)
         return { ...baseResult, show: true, isRoot: degree === 1, isExtendedChord: true, extendedChordDegree: degree, isBassNote: isBass }
       }
     }
 
     // Check 7th chord display
     if (seventhChordType !== 'none') {
-      if (isNoteInSeventhChord(note, rootNote, seventhChordType)) {
-        const degree = getSeventhChordDegree(note, rootNote, seventhChordType)
+      if (isNoteInSeventhChord(note, effectiveChordRoot, seventhChordType)) {
+        const degree = getSeventhChordDegree(note, effectiveChordRoot, seventhChordType)
         return { ...baseResult, show: true, isRoot: degree === 1, isSeventhChord: true, seventhChordDegree: degree, isBassNote: isBass }
       }
     }
 
     // Check triad display
     if (triadType !== 'none') {
-      if (isNoteInTriad(note, rootNote, triadType)) {
-        const degree = getTriadDegree(note, rootNote, triadType)
+      if (isNoteInTriad(note, effectiveChordRoot, triadType)) {
+        const degree = getTriadDegree(note, effectiveChordRoot, triadType)
         return { ...baseResult, show: true, isRoot: degree === 1, isTriad: true, triadDegree: degree, isBassNote: isBass }
       }
     }
 
     // Check dyad display
     if (dyadType !== 'none') {
-      if (isNoteInDyad(note, rootNote, dyadType)) {
-        const degree = getDyadDegree(note, rootNote, dyadType)
+      if (isNoteInDyad(note, effectiveChordRoot, dyadType)) {
+        const degree = getDyadDegree(note, effectiveChordRoot, dyadType)
         return { ...baseResult, show: true, isRoot: degree === 1, isDyad: true, dyadDegree: degree }
       }
     }
@@ -319,6 +324,27 @@ export function Fretboard({ rootNote, showAllNotes, showDegrees, selectedInterva
     return note
   }
 
+  // Get CAGED shape info for a fret position
+  const getCAGEDOverlay = (fretNumber: number): { color: string, shape: CAGEDShape } | null => {
+    if (!showCAGED) return null
+
+    const shapesToCheck = cagedShape === 'all' ? CAGED_SHAPE_ORDER : [cagedShape]
+
+    for (const shape of shapesToCheck) {
+      const range = getCAGEDShapeFretRange(rootNote, shape, tuning)
+      if (fretNumber >= range.start && fretNumber <= range.end) {
+        return { color: CAGED_SHAPES[shape].color, shape }
+      }
+      // Also check if shape wraps around (e.g., starts at fret 10 and goes to fret 13, but we only show 12 frets)
+      // Handle octave repetition
+      const range12 = { start: range.start + 12, end: range.end + 12 }
+      if (fretNumber >= range12.start && fretNumber <= range12.end && fretNumber <= fretCount) {
+        return { color: CAGED_SHAPES[shape].color, shape }
+      }
+    }
+    return null
+  }
+
   const fretboardClass = compact
     ? `${styles.fretboard} ${styles.compact}`
     : styles.fretboard
@@ -370,9 +396,14 @@ export function Fretboard({ rootNote, showAllNotes, showDegrees, selectedInterva
             {Array.from({ length: fretCount }, (_, fret) => {
               const note = getNoteAtFret(openNote, fret + 1)
               const noteDisplay = shouldShowNote(note)
+              const cagedOverlay = getCAGEDOverlay(fret + 1)
 
               return (
-                <div key={fret} className={styles.fret}>
+                <div
+                  key={fret}
+                  className={styles.fret}
+                  style={cagedOverlay ? { backgroundColor: `${cagedOverlay.color}20` } : undefined}
+                >
                   <div className={styles.fretWire} />
                   {noteDisplay.show && (
                     <span
