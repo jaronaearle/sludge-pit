@@ -8,6 +8,7 @@
 .header {
   padding: 24px;
   text-align: center;
+  background: #1e1e1e;
   border-bottom: 1px solid #2d2d2d;
 }
 
@@ -28,6 +29,16 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
+}
+
+.footer {
+  text-align: center;
+  padding: 24px;
+  color: #fff;
+  font-size: 12px;
+  background: #1e1e1e;
+  border-top: 1px solid #2d2d2d;
+  margin-top: 40px;
 }
 
 /* Global reset */
