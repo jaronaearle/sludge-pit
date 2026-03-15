@@ -1,4 +1,4 @@
-import { Note, Interval, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Tuning, TuningId, CAGEDShape } from '../types/music'
+import { Note, Interval, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Tuning, TuningId, CAGEDShape, ScalePosition } from '../types/music'
 
 export const NOTES: Note[] = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
@@ -139,6 +139,118 @@ export function getScaleDegree(note: Note, root: Note, scaleType: Exclude<ScaleT
   const scaleNotes = getScaleNotes(root, scaleType)
   const index = scaleNotes.indexOf(note)
   return index === -1 ? null : index + 1
+}
+
+// Get the number of positions for a scale type
+export function getScalePositionCount(scaleType: Exclude<ScaleType, 'none'>): number {
+  const pattern = SCALE_PATTERNS[scaleType]
+  // Pentatonic and blues use 5 positions, 7-note scales use 7
+  return pattern.length <= 6 ? 5 : 7
+}
+
+// Get interval formula (W-W-H pattern) for a scale
+export function getScaleIntervalFormula(scaleType: Exclude<ScaleType, 'none'>): string {
+  const pattern = SCALE_PATTERNS[scaleType]
+  const intervals: string[] = []
+
+  for (let i = 0; i < pattern.length - 1; i++) {
+    const diff = pattern[i + 1] - pattern[i]
+    if (diff === 1) intervals.push('H')
+    else if (diff === 2) intervals.push('W')
+    else if (diff === 3) intervals.push('W+H')
+    else intervals.push(`${diff}`)
+  }
+  // Add final interval back to root
+  const lastInterval = 12 - pattern[pattern.length - 1]
+  if (lastInterval === 1) intervals.push('H')
+  else if (lastInterval === 2) intervals.push('W')
+  else if (lastInterval === 3) intervals.push('W+H')
+
+  return intervals.join('-')
+}
+
+// Scale degree info with interval names
+export interface ScaleDegreeInfo {
+  degree: number
+  note: Note
+  intervalName: string
+  isChordTone: boolean
+}
+
+// Interval names from root (in semitones)
+const SEMITONE_TO_INTERVAL: Record<number, string> = {
+  0: 'R',
+  1: 'b2',
+  2: '2',
+  3: 'b3',
+  4: '3',
+  5: '4',
+  6: 'b5',
+  7: '5',
+  8: '#5',
+  9: '6',
+  10: 'b7',
+  11: '7',
+}
+
+export function getScaleDegreeInfo(root: Note, scaleType: Exclude<ScaleType, 'none'>): ScaleDegreeInfo[] {
+  const pattern = SCALE_PATTERNS[scaleType]
+  const notes = getScaleNotes(root, scaleType)
+
+  return notes.map((note, index) => ({
+    degree: index + 1,
+    note,
+    intervalName: SEMITONE_TO_INTERVAL[pattern[index]],
+    isChordTone: pattern[index] === 0 || pattern[index] === 4 || pattern[index] === 3 ||
+                 pattern[index] === 7 || pattern[index] === 10 || pattern[index] === 11,
+    // Chord tones: R, 3/b3, 5, 7/b7
+  }))
+}
+
+// Get the fret range for a scale position
+// Each position is a "box" pattern spanning about 4-5 frets
+export function getScalePositionFretRange(
+  root: Note,
+  scaleType: Exclude<ScaleType, 'none'>,
+  position: Exclude<ScalePosition, 'all'>,
+  tuning: Note[]
+): { start: number; end: number } {
+  const rootIndex = NOTES.indexOf(root)
+  const lowEOpen = NOTES.indexOf(tuning[0]) // Low E string open note
+
+  // Find where root appears on the low E string
+  let rootFretOnLowE = (rootIndex - lowEOpen + 12) % 12
+  if (rootFretOnLowE === 0) rootFretOnLowE = 12 // Use 12th fret if root is open string note
+
+  const positionCount = getScalePositionCount(scaleType)
+  const positionsToUse = Math.min(position, positionCount)
+
+  // Each position spans roughly 4-5 frets
+  // Position 1 starts at the root, subsequent positions move up
+  const fretSpan = 4
+  const positionOffset = Math.floor((positionsToUse - 1) * (12 / positionCount))
+
+  let start = rootFretOnLowE + positionOffset - 2 // Center the box around the position
+  if (start < 1) start = 1
+
+  return {
+    start,
+    end: start + fretSpan
+  }
+}
+
+// Check if a fret is within the current scale position
+export function isFretInScalePosition(
+  fret: number,
+  root: Note,
+  scaleType: Exclude<ScaleType, 'none'>,
+  position: ScalePosition,
+  tuning: Note[]
+): boolean {
+  if (position === 'all') return true
+
+  const range = getScalePositionFretRange(root, scaleType, position, tuning)
+  return fret >= range.start && fret <= range.end
 }
 
 // Dyad patterns as semitone intervals from root

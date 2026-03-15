@@ -11,7 +11,11 @@ import {
   TuningId,
   FretCount,
   CAGEDShape,
+  ScalePosition,
+  StringNumber,
 } from "../../types/music";
+
+// Note: ScalePosition, StringNumber, and getScalePositionCount are kept for future scale position feature
 import {
   NOTES,
   INTERVALS,
@@ -35,6 +39,7 @@ import {
   supportsInversion,
   CAGED_SHAPE_ORDER,
   CAGED_SHAPES,
+  // getScalePositionCount, // Hidden for now - scale position feature
 } from "../../utils/music";
 import { CollapsibleSection } from "../CollapsibleSection/CollapsibleSection";
 import styles from "./Controls.module.css";
@@ -72,6 +77,12 @@ interface ControlsProps {
   onShowCAGEDChange: (show: boolean) => void;
   cagedShape: CAGEDShape | 'all';
   onCagedShapeChange: (shape: CAGEDShape | 'all') => void;
+  scalePosition: ScalePosition;
+  onScalePositionChange: (position: ScalePosition) => void;
+  singleStringMode: boolean;
+  onSingleStringModeChange: (enabled: boolean) => void;
+  selectedString: StringNumber;
+  onSelectedStringChange: (stringNum: StringNumber) => void;
   onReset: () => void;
   onResetScales: () => void;
   onResetChords: () => void;
@@ -110,6 +121,12 @@ export function Controls({
   onShowCAGEDChange,
   cagedShape,
   onCagedShapeChange,
+  scalePosition: _scalePosition,
+  onScalePositionChange: _onScalePositionChange,
+  singleStringMode: _singleStringMode,
+  onSingleStringModeChange: _onSingleStringModeChange,
+  selectedString: _selectedString,
+  onSelectedStringChange: _onSelectedStringChange,
   onReset,
   onResetScales,
   onResetChords,

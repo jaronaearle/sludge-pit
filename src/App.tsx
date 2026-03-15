@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Note, SelectedIntervals, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, TuningId, FretCount, CAGEDShape } from './types/music'
+import { Note, SelectedIntervals, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, TuningId, FretCount, CAGEDShape, ScalePosition, StringNumber } from './types/music'
 import { Fretboard } from './components/Fretboard/Fretboard'
 import { Controls } from './components/Controls/Controls'
 import { KeyReference } from './components/KeyReference/KeyReference'
+import { ScaleReference } from './components/ScaleReference/ScaleReference'
 import { ChordVoicings } from './components/ChordVoicings/ChordVoicings'
 import { CircleOfFifths } from './components/CircleOfFifths/CircleOfFifths'
 import { TUNINGS } from './utils/music'
@@ -26,6 +27,9 @@ function App() {
   const [fretCount, setFretCount] = useState<FretCount>(12)
   const [showCAGED, setShowCAGED] = useState(false)
   const [cagedShape, setCagedShape] = useState<CAGEDShape | 'all'>('all')
+  const [scalePosition, setScalePosition] = useState<ScalePosition>('all')
+  const [singleStringMode, setSingleStringMode] = useState(false)
+  const [selectedString, setSelectedString] = useState<StringNumber>(6) // Default to low E
 
   // Clear chords when selecting a scale
   const clearChords = () => {
@@ -108,6 +112,8 @@ function App() {
   const handleResetScales = () => {
     setScaleType('none')
     setModeType('none')
+    setScalePosition('all')
+    setSingleStringMode(false)
   }
 
   const handleResetChords = () => {
@@ -143,6 +149,9 @@ function App() {
     setFretCount(12)
     setShowCAGED(false)
     setCagedShape('all')
+    setScalePosition('all')
+    setSingleStringMode(false)
+    setSelectedString(6)
   }
 
   const currentTuning = TUNINGS[tuningId]
@@ -164,8 +173,8 @@ function App() {
   return (
     <div className={styles.app}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Neck Learner</h1>
-        <p className={styles.subtitle}>Learn the guitar fretboard</p>
+        <h1 className={styles.title}>Fretboard Master</h1>
+        <p className={styles.subtitle}>Scales, chords, and theory for guitar</p>
       </header>
 
       <main className={styles.main}>
@@ -202,6 +211,12 @@ function App() {
           onShowCAGEDChange={setShowCAGED}
           cagedShape={cagedShape}
           onCagedShapeChange={setCagedShape}
+          scalePosition={scalePosition}
+          onScalePositionChange={setScalePosition}
+          singleStringMode={singleStringMode}
+          onSingleStringModeChange={setSingleStringMode}
+          selectedString={selectedString}
+          onSelectedStringChange={setSelectedString}
           onReset={handleReset}
           onResetScales={handleResetScales}
           onResetChords={handleResetChords}
@@ -212,6 +227,12 @@ function App() {
           selectedChordRoot={chordRoot}
           selectedTriadType={triadType}
           onChordSelect={handleChordSelect}
+        />
+
+        <ScaleReference
+          rootNote={rootNote}
+          scaleType={scaleType}
+          modeType={modeType}
         />
 
         {showReference && tuningId !== 'e_standard' && (
@@ -232,6 +253,9 @@ function App() {
             fretCount={fretCount}
             showCAGED={showCAGED}
             cagedShape={cagedShape}
+            scalePosition={scalePosition}
+            singleStringMode={singleStringMode}
+            selectedString={selectedString}
             label="E Standard (Reference)"
             compact
           />
@@ -254,6 +278,9 @@ function App() {
           fretCount={fretCount}
           showCAGED={showCAGED}
           cagedShape={cagedShape}
+          scalePosition={scalePosition}
+          singleStringMode={singleStringMode}
+          selectedString={selectedString}
           label={tuningId !== 'e_standard' ? currentTuning.name : undefined}
         />
 

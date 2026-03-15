@@ -1,5 +1,5 @@
-import { Note, SelectedIntervals, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Interval, FretCount, CAGEDShape } from '../../types/music'
-import { getNoteAtFret, getInterval, INTERVAL_COLORS, isNoteInScale, getScaleDegree, isNoteInDyad, getDyadDegree, isNoteInTriad, getTriadDegree, isNoteInSeventhChord, getSeventhChordDegree, isNoteInExtendedChord, getExtendedChordDegree, isNoteInMode, getModeDegree, getInversionBassIndex, getTriadNotes, getSeventhChordNotes, getExtendedChordNotes, CAGED_SHAPES, CAGED_SHAPE_ORDER, getCAGEDShapeFretRange } from '../../utils/music'
+import { Note, SelectedIntervals, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Interval, FretCount, CAGEDShape, ScalePosition, StringNumber } from '../../types/music'
+import { getNoteAtFret, getInterval, INTERVAL_COLORS, isNoteInScale, getScaleDegree, isNoteInDyad, getDyadDegree, isNoteInTriad, getTriadDegree, isNoteInSeventhChord, getSeventhChordDegree, isNoteInExtendedChord, getExtendedChordDegree, isNoteInMode, getModeDegree, getInversionBassIndex, getTriadNotes, getSeventhChordNotes, getExtendedChordNotes, CAGED_SHAPES, CAGED_SHAPE_ORDER, getCAGEDShapeFretRange, isFretInScalePosition } from '../../utils/music'
 import styles from './Fretboard.module.css'
 
 interface FretboardProps {
@@ -19,6 +19,9 @@ interface FretboardProps {
   fretCount: FretCount
   showCAGED?: boolean
   cagedShape?: CAGEDShape | 'all'
+  scalePosition?: ScalePosition
+  singleStringMode?: boolean
+  selectedString?: StringNumber
   label?: string
   compact?: boolean
 }
@@ -64,7 +67,7 @@ const EXTENDED_CHORD_DEGREE_COLORS: Record<number, string> = {
   7: '#818cf8', // 13th - indigo
 }
 
-export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, selectedIntervals, scaleType, dyadType, triadType, seventhChordType, extendedChordType, modeType, inversionType, tuning, fretCount, showCAGED = false, cagedShape = 'all', label, compact = false }: FretboardProps) {
+export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, selectedIntervals, scaleType, dyadType, triadType, seventhChordType, extendedChordType, modeType, inversionType, tuning, fretCount, showCAGED = false, cagedShape = 'all', scalePosition = 'all', singleStringMode = false, selectedString = 6, label, compact = false }: FretboardProps) {
   // Use chordRoot for chord display, rootNote for scales/intervals
   const effectiveChordRoot = chordRoot ?? rootNote
   const getIntervalForNote = (note: Note): Interval => {
@@ -375,12 +378,29 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
 
       {/* Strings - reversed so high E is at top */}
       {[...tuning].reverse().map((openNote, stringIndex) => {
+        // Convert stringIndex to actual string number (1-6)
+        // stringIndex 0 = high E (string 1), stringIndex 5 = low E (string 6)
+        const actualStringNumber = (6 - stringIndex) as StringNumber
+
+        // In single string mode, only show the selected string
+        if (singleStringMode && actualStringNumber !== selectedString) {
+          return null
+        }
+
         const openNoteDisplay = shouldShowNote(openNote)
+
+        // Check if open string note should be shown based on position filtering
+        // Open string (fret 0) - check position if scale/mode active
+        const activeScaleType = scaleType !== 'none' ? scaleType : (modeType !== 'none' ? 'major' : null)
+        const isOpenInPosition = activeScaleType
+          ? isFretInScalePosition(0, rootNote, activeScaleType, scalePosition, tuning)
+          : true
+
         return (
           <div key={stringIndex} className={styles.string}>
             {/* Nut / Open string */}
             <div className={styles.nut}>
-              {openNoteDisplay.show ? (
+              {openNoteDisplay.show && isOpenInPosition ? (
                 <span
                   className={getNoteClass(openNoteDisplay)}
                   style={{ backgroundColor: getNoteColor(openNoteDisplay) }}
@@ -398,6 +418,11 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
               const noteDisplay = shouldShowNote(note)
               const cagedOverlay = getCAGEDOverlay(fret + 1)
 
+              // Check if fret is in the current scale position
+              const isInPosition = activeScaleType
+                ? isFretInScalePosition(fret + 1, rootNote, activeScaleType, scalePosition, tuning)
+                : true
+
               return (
                 <div
                   key={fret}
@@ -405,7 +430,7 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
                   style={cagedOverlay ? { backgroundColor: `${cagedOverlay.color}20` } : undefined}
                 >
                   <div className={styles.fretWire} />
-                  {noteDisplay.show && (
+                  {noteDisplay.show && isInPosition && (
                     <span
                       className={getNoteClass(noteDisplay)}
                       style={{ backgroundColor: getNoteColor(noteDisplay) }}

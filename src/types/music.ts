@@ -58,3 +58,9 @@ export interface FretPosition {
 export type FretCount = 12 | 18 | 24
 
 export type CAGEDShape = 'C' | 'A' | 'G' | 'E' | 'D'
+
+// Scale position (1-7 for 7-note scales, 1-5 for pentatonic/blues)
+export type ScalePosition = 'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7
+
+// String number (1 = high E, 6 = low E)
+export type StringNumber = 1 | 2 | 3 | 4 | 5 | 6
