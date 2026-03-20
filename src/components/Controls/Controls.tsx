@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Note,
   SelectedIntervals,
@@ -39,9 +40,12 @@ import {
   supportsInversion,
   CAGED_SHAPE_ORDER,
   CAGED_SHAPES,
+  getNoteDisplay,
   // getScalePositionCount, // Hidden for now - scale position feature
 } from "../../utils/music";
 import { CollapsibleSection } from "../CollapsibleSection/CollapsibleSection";
+import { ChordProgressions } from "../ChordProgressions/ChordProgressions";
+import { NotationGuide } from "../NotationGuide/NotationGuide";
 import styles from "./Controls.module.css";
 
 interface ControlsProps {
@@ -86,6 +90,7 @@ interface ControlsProps {
   onReset: () => void;
   onResetScales: () => void;
   onResetChords: () => void;
+  onChordSelect: (chordRoot: Note, quality: TriadType) => void;
 }
 
 export function Controls({
@@ -130,7 +135,10 @@ export function Controls({
   onReset,
   onResetScales,
   onResetChords,
+  onChordSelect,
 }: ControlsProps) {
+  const [showNotationGuide, setShowNotationGuide] = useState(false);
+
   const hasChord =
     triadType !== "none" ||
     seventhChordType !== "none" ||
@@ -151,7 +159,7 @@ export function Controls({
               >
                 {NOTES.map((note) => (
                   <option key={note} value={note}>
-                    {note}
+                    {getNoteDisplay(note)}
                   </option>
                 ))}
               </select>
@@ -249,12 +257,24 @@ export function Controls({
               </select>
             )}
 
+            <button
+              className={styles.guideButton}
+              onClick={() => setShowNotationGuide(true)}
+            >
+              Notation Guide
+            </button>
+
             <button className={styles.resetButton} onClick={onReset}>
               Reset
             </button>
           </div>
         </div>
       </div>
+
+      <NotationGuide
+        isOpen={showNotationGuide}
+        onClose={() => setShowNotationGuide(false)}
+      />
 
       {/* Collapsible Sections */}
       <div className={styles.sections}>
@@ -448,6 +468,8 @@ export function Controls({
             )}
           </div>
         </CollapsibleSection>
+
+        <ChordProgressions rootNote={rootNote} onChordSelect={onChordSelect} />
       </div>
     </div>
   );

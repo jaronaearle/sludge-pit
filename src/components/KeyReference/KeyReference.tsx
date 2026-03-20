@@ -1,5 +1,5 @@
 import { Note, TriadType } from '../../types/music'
-import { getChordsInMajorKey, getChordsInMinorKey, getChordSymbol, KeyChord } from '../../utils/music'
+import { getChordsInMajorKey, getChordsInMinorKey, getChordSymbol, KeyChord, getNoteDisplay } from '../../utils/music'
 import styles from './KeyReference.module.css'
 
 interface KeyReferenceProps {
@@ -36,7 +36,7 @@ export function KeyReference({ rootNote, selectedChordRoot, selectedTriadType, o
   const renderChordRow = (chords: KeyChord[], keyType: 'major' | 'minor') => (
     <div className={styles.keyRow}>
       <div className={styles.keyLabel}>
-        {rootNote} {keyType === 'major' ? 'Major' : 'Minor'}
+        {getNoteDisplay(rootNote)} {keyType === 'major' ? 'Major' : 'Minor'}
       </div>
       <div className={styles.chordsContainer}>
         {chords.map((chord, index) => (

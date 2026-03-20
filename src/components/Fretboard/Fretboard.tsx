@@ -1,5 +1,5 @@
 import { Note, SelectedIntervals, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Interval, FretCount, CAGEDShape, ScalePosition, StringNumber } from '../../types/music'
-import { getNoteAtFret, getInterval, INTERVAL_COLORS, isNoteInScale, getScaleDegree, isNoteInDyad, getDyadDegree, isNoteInTriad, getTriadDegree, isNoteInSeventhChord, getSeventhChordDegree, isNoteInExtendedChord, getExtendedChordDegree, isNoteInMode, getModeDegree, getInversionBassIndex, getTriadNotes, getSeventhChordNotes, getExtendedChordNotes, CAGED_SHAPES, CAGED_SHAPE_ORDER, getCAGEDShapeFretRange, isFretInScalePosition } from '../../utils/music'
+import { getNoteAtFret, getInterval, INTERVAL_COLORS, isNoteInScale, getScaleDegree, isNoteInDyad, getDyadDegree, isNoteInTriad, getTriadDegree, isNoteInSeventhChord, getSeventhChordDegree, isNoteInExtendedChord, getExtendedChordDegree, isNoteInMode, getModeDegree, getInversionBassIndex, getTriadNotes, getSeventhChordNotes, getExtendedChordNotes, CAGED_SHAPES, CAGED_SHAPE_ORDER, getCAGEDShapeFretRange, isFretInScalePosition, getNoteDisplay } from '../../utils/music'
 import styles from './Fretboard.module.css'
 
 interface FretboardProps {
@@ -275,7 +275,7 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
   // Get display text for a note (note name or degree)
   const getNoteDisplayText = (note: Note, display: NoteDisplayResult): string => {
     if (!showDegrees) {
-      return note
+      return getNoteDisplay(note)
     }
 
     // Show degree based on what's being displayed
@@ -324,7 +324,7 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
     }
 
     // Fallback to note name
-    return note
+    return getNoteDisplay(note)
   }
 
   // Get CAGED shape info for a fret position
@@ -408,7 +408,7 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
                   {getNoteDisplayText(openNote, openNoteDisplay)}
                 </span>
               ) : (
-                <span className={styles.openNote}>{openNote}</span>
+                <span className={styles.openNote}>{getNoteDisplay(openNote)}</span>
               )}
             </div>
 

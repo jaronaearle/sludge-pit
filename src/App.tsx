@@ -269,6 +269,7 @@ function App() {
           onReset={handleReset}
           onResetScales={handleResetScales}
           onResetChords={handleResetChords}
+          onChordSelect={handleChordSelect}
         />
 
         <KeyReference

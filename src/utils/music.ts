@@ -1,6 +1,21 @@
-import { Note, Interval, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Tuning, TuningId, CAGEDShape, ScalePosition } from '../types/music'
+import { Note, Interval, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Tuning, TuningId, CAGEDShape, ScalePosition, ChordProgression, ChordInProgression, ProgressionCategory, ProgressionKeyType } from '../types/music'
 
 export const NOTES: Note[] = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+// Enharmonic equivalents for sharp notes
+export const ENHARMONICS: Record<string, string> = {
+  'C#': 'Db',
+  'D#': 'Eb',
+  'F#': 'Gb',
+  'G#': 'Ab',
+  'A#': 'Bb',
+}
+
+// Get note display with enharmonic equivalent (e.g., "C#/Db")
+export function getNoteDisplay(note: Note): string {
+  const enharmonic = ENHARMONICS[note]
+  return enharmonic ? `${note}/${enharmonic}` : note
+}
 
 // Standard tuning: low E to high E (strings 6 to 1)
 export const STANDARD_TUNING: Note[] = ['E', 'A', 'D', 'G', 'B', 'E']
@@ -675,7 +690,7 @@ export function getChordsInMinorKey(root: Note): KeyChord[] {
 // Get chord symbol (e.g., "C", "Dm", "E°")
 export function getChordSymbol(chord: KeyChord): string {
   const qualitySuffix = chord.quality === 'minor' ? 'm' : chord.quality === 'diminished' ? '°' : ''
-  return `${chord.root}${qualitySuffix}`
+  return `${getNoteDisplay(chord.root)}${qualitySuffix}`
 }
 
 // Chord Voicings
@@ -919,4 +934,259 @@ export function getCAGEDShapeFretRange(rootNote: Note, shape: CAGEDShape, tuning
     start,
     end: start + shapeInfo.fretSpan - 1
   }
+}
+
+// ============================================
+// CHORD PROGRESSIONS
+// ============================================
+
+// Major key chord qualities for each scale degree
+const MAJOR_KEY_CHORDS: Record<string, { quality: TriadType; degree: number; borrowed?: boolean }> = {
+  'I': { quality: 'major', degree: 1 },
+  'ii': { quality: 'minor', degree: 2 },
+  'iii': { quality: 'minor', degree: 3 },
+  'IV': { quality: 'major', degree: 4 },
+  'V': { quality: 'major', degree: 5 },
+  'vi': { quality: 'minor', degree: 6 },
+  'vii°': { quality: 'diminished', degree: 7 },
+  // Borrowed chords (from parallel minor / other modes)
+  'bVII': { quality: 'major', degree: 7, borrowed: true },
+  'bVI': { quality: 'major', degree: 6, borrowed: true },
+  'bIII': { quality: 'major', degree: 3, borrowed: true },
+  'iv': { quality: 'minor', degree: 4, borrowed: true },
+  'II': { quality: 'major', degree: 2, borrowed: true },
+  'III': { quality: 'major', degree: 3, borrowed: true },
+}
+
+// Minor key chord qualities for each scale degree (natural minor)
+const MINOR_KEY_CHORDS: Record<string, { quality: TriadType; degree: number; borrowed?: boolean }> = {
+  'i': { quality: 'minor', degree: 1 },
+  'ii°': { quality: 'diminished', degree: 2 },
+  'III': { quality: 'major', degree: 3 },
+  'iv': { quality: 'minor', degree: 4 },
+  'v': { quality: 'minor', degree: 5 },
+  'V': { quality: 'major', degree: 5 }, // From harmonic minor
+  'VI': { quality: 'major', degree: 6 },
+  'VII': { quality: 'major', degree: 7 },
+  'vii°': { quality: 'diminished', degree: 7, borrowed: true }, // From harmonic minor
+  // Borrowed chords
+  'bVII': { quality: 'major', degree: 7 },
+  'bVI': { quality: 'major', degree: 6 },
+  'bIII': { quality: 'major', degree: 3 },
+  'IV': { quality: 'major', degree: 4, borrowed: true },
+  'I': { quality: 'major', degree: 1, borrowed: true }, // Picardy third
+}
+
+// Helper to create chord progression entries
+function createProgression(
+  id: string,
+  name: string,
+  numerals: string[],
+  category: ProgressionCategory,
+  keyType: ProgressionKeyType,
+  description?: string
+): ChordProgression {
+  const chordMap = keyType === 'major' ? MAJOR_KEY_CHORDS : MINOR_KEY_CHORDS
+  const chords: ChordInProgression[] = numerals.map(numeral => {
+    const chord = chordMap[numeral]
+    if (!chord) {
+      // Fallback for any missing chords
+      return { numeral, quality: 'major' as TriadType, scaleDegree: 1 }
+    }
+    return {
+      numeral,
+      quality: chord.quality,
+      scaleDegree: chord.degree,
+      borrowed: chord.borrowed,
+    }
+  })
+
+  return {
+    id,
+    name,
+    chords,
+    category,
+    keyType,
+    startingNumeral: numerals[0],
+    description,
+  }
+}
+
+// All chord progressions
+export const CHORD_PROGRESSIONS: ChordProgression[] = [
+  // ==================
+  // MAJOR - CLASSICAL
+  // ==================
+
+  // Starting on I
+  createProgression('maj-class-1', 'Authentic Cadence', ['I', 'V', 'I'], 'classical', 'major', 'The strongest resolution'),
+  createProgression('maj-class-2', 'Plagal Cadence', ['I', 'IV', 'I'], 'classical', 'major', 'The "Amen" cadence'),
+  createProgression('maj-class-3', 'Classic I-IV-V', ['I', 'IV', 'V', 'I'], 'classical', 'major', 'The foundation of Western music'),
+  createProgression('maj-class-4', '50s Doo-Wop', ['I', 'vi', 'IV', 'V'], 'classical', 'major', 'Heart and Soul, Stand By Me'),
+  createProgression('maj-class-5', 'Circle Progression', ['I', 'vi', 'ii', 'V'], 'classical', 'major', 'Movement by fifths'),
+  createProgression('maj-class-6', 'I-ii-V-I', ['I', 'ii', 'V', 'I'], 'classical', 'major', 'Jazz standard cadence'),
+
+  // Starting on ii
+  createProgression('maj-class-7', 'ii-V-I', ['ii', 'V', 'I'], 'classical', 'major', 'The most common jazz progression'),
+  createProgression('maj-class-8', 'ii-V-vi', ['ii', 'V', 'vi'], 'classical', 'major', 'Deceptive resolution'),
+
+  // Starting on IV
+  createProgression('maj-class-9', 'IV-V-I', ['IV', 'V', 'I'], 'classical', 'major', 'Simple authentic approach'),
+  createProgression('maj-class-10', 'IV-I', ['IV', 'I'], 'classical', 'major', 'Plagal resolution'),
+
+  // Starting on V
+  createProgression('maj-class-11', 'V-I', ['V', 'I'], 'classical', 'major', 'Perfect cadence'),
+  createProgression('maj-class-12', 'V-vi', ['V', 'vi'], 'classical', 'major', 'Deceptive cadence'),
+
+  // Starting on vi
+  createProgression('maj-class-13', 'vi-ii-V-I', ['vi', 'ii', 'V', 'I'], 'classical', 'major', 'Full circle of fifths segment'),
+  createProgression('maj-class-14', 'vi-IV-V-I', ['vi', 'IV', 'V', 'I'], 'classical', 'major', 'Minor to major resolution'),
+
+  // ==================
+  // MAJOR - MODERN
+  // ==================
+
+  // Starting on I
+  createProgression('maj-mod-1', 'Sweet Home Alabama', ['I', 'bVII', 'IV'], 'modern', 'major', 'Classic rock progression'),
+  createProgression('maj-mod-2', 'Hey Joe', ['I', 'V', 'bVII', 'IV'], 'modern', 'major', 'Hendrix-style rock'),
+  createProgression('maj-mod-3', 'Pop Punk', ['I', 'V', 'vi', 'IV'], 'modern', 'major', 'Countless pop songs'),
+  createProgression('maj-mod-4', 'Country Roads', ['I', 'IV', 'vi', 'V'], 'modern', 'major', 'Folk/country staple'),
+  createProgression('maj-mod-5', 'Borrowed Third', ['I', 'III', 'IV'], 'modern', 'major', 'Major III adds drama'),
+  createProgression('maj-mod-6', 'Minor Four', ['I', 'iv', 'I'], 'modern', 'major', 'Borrowed minor subdominant'),
+  createProgression('maj-mod-7', 'Creep Progression', ['I', 'III', 'IV', 'iv'], 'modern', 'major', 'Radiohead-style emotional'),
+
+  // Starting on IV
+  createProgression('maj-mod-8', 'Axis Rotation', ['IV', 'I', 'V', 'vi'], 'modern', 'major', 'Axis starting on IV'),
+  createProgression('maj-mod-9', 'Plagal Loop', ['IV', 'I'], 'modern', 'major', 'Modern pop hook'),
+  createProgression('maj-mod-10', 'IV-bVII-I', ['IV', 'bVII', 'I'], 'modern', 'major', 'Rock resolution'),
+
+  // Starting on V
+  createProgression('maj-mod-11', 'Rock Turnaround', ['V', 'IV', 'I'], 'modern', 'major', 'Reverse authentic cadence'),
+  createProgression('maj-mod-12', 'V-bVII-I', ['V', 'bVII', 'I'], 'modern', 'major', 'Modal rock ending'),
+
+  // Starting on vi
+  createProgression('maj-mod-13', 'Axis of Awesome', ['vi', 'IV', 'I', 'V'], 'modern', 'major', '4 chords, 100+ songs'),
+  createProgression('maj-mod-14', 'Emotional Pop', ['vi', 'V', 'IV', 'V'], 'modern', 'major', 'Building intensity'),
+  createProgression('maj-mod-15', 'vi-IV-I', ['vi', 'IV', 'I'], 'modern', 'major', 'Melancholic to resolved'),
+
+  // Starting on bVI
+  createProgression('maj-mod-16', 'Epic Cinematic', ['bVI', 'bVII', 'I'], 'modern', 'major', 'Movie trailer sound'),
+  createProgression('maj-mod-17', 'bVI-IV-I', ['bVI', 'IV', 'I'], 'modern', 'major', 'Dramatic resolution'),
+
+  // Starting on bVII
+  createProgression('maj-mod-18', 'bVII-IV-I', ['bVII', 'IV', 'I'], 'modern', 'major', 'Rock anthem ending'),
+  createProgression('maj-mod-19', 'Mixolydian Vamp', ['bVII', 'I'], 'modern', 'major', 'Modal rock groove'),
+
+  // ==================
+  // MINOR - CLASSICAL
+  // ==================
+
+  // Starting on i
+  createProgression('min-class-1', 'Minor Authentic', ['i', 'V', 'i'], 'classical', 'minor', 'Harmonic minor cadence'),
+  createProgression('min-class-2', 'Minor Plagal', ['i', 'iv', 'i'], 'classical', 'minor', 'Minor amen cadence'),
+  createProgression('min-class-3', 'i-iv-V-i', ['i', 'iv', 'V', 'i'], 'classical', 'minor', 'Classic minor progression'),
+  createProgression('min-class-4', 'i-VI-III-VII', ['i', 'VI', 'III', 'VII'], 'classical', 'minor', 'Descending bass line'),
+  createProgression('min-class-5', 'i-iv-VII-III', ['i', 'iv', 'VII', 'III'], 'classical', 'minor', 'Natural minor movement'),
+
+  // Starting on iv
+  createProgression('min-class-6', 'iv-V-i', ['iv', 'V', 'i'], 'classical', 'minor', 'Subdominant approach'),
+  createProgression('min-class-7', 'iv-i', ['iv', 'i'], 'classical', 'minor', 'Minor plagal'),
+
+  // Starting on V
+  createProgression('min-class-8', 'V-i', ['V', 'i'], 'classical', 'minor', 'Minor perfect cadence'),
+  createProgression('min-class-9', 'V-VI', ['V', 'VI'], 'classical', 'minor', 'Minor deceptive cadence'),
+
+  // Starting on VI
+  createProgression('min-class-10', 'VI-VII-i', ['VI', 'VII', 'i'], 'classical', 'minor', 'Stepwise ascent to tonic'),
+  createProgression('min-class-11', 'VI-iv-V-i', ['VI', 'iv', 'V', 'i'], 'classical', 'minor', 'Full minor cadence'),
+
+  // ==================
+  // MINOR - MODERN
+  // ==================
+
+  // Starting on i
+  createProgression('min-mod-1', 'Andalusian Cadence', ['i', 'VII', 'VI', 'V'], 'modern', 'minor', 'Flamenco, Hit the Road Jack'),
+  createProgression('min-mod-2', 'Minor Pop', ['i', 'VI', 'III', 'VII'], 'modern', 'minor', 'Emotional pop/rock'),
+  createProgression('min-mod-3', 'Grunge', ['i', 'iv', 'III', 'VI'], 'modern', 'minor', '90s alternative sound'),
+  createProgression('min-mod-4', 'Dark Pop', ['i', 'III', 'VII', 'VI'], 'modern', 'minor', 'Minor key pop hook'),
+  createProgression('min-mod-5', 'i-VII-i', ['i', 'VII', 'i'], 'modern', 'minor', 'Simple minor rock'),
+
+  // Starting on VI
+  createProgression('min-mod-6', 'VI-VII-i', ['VI', 'VII', 'i'], 'modern', 'minor', 'Building minor cadence'),
+  createProgression('min-mod-7', 'VI-III-VII-i', ['VI', 'III', 'VII', 'i'], 'modern', 'minor', 'Extended minor buildup'),
+  createProgression('min-mod-8', 'VI-iv-i-V', ['VI', 'iv', 'i', 'V'], 'modern', 'minor', 'Dramatic minor progression'),
+
+  // Starting on VII
+  createProgression('min-mod-9', 'VII-VI-i', ['VII', 'VI', 'i'], 'modern', 'minor', 'Descending to minor tonic'),
+  createProgression('min-mod-10', 'VII-i', ['VII', 'i'], 'modern', 'minor', 'Modal minor resolution'),
+
+  // Starting on III
+  createProgression('min-mod-11', 'III-VII-i', ['III', 'VII', 'i'], 'modern', 'minor', 'Relative major approach'),
+  createProgression('min-mod-12', 'III-VI-VII-i', ['III', 'VI', 'VII', 'i'], 'modern', 'minor', 'Extended relative major'),
+
+  // Starting on iv
+  createProgression('min-mod-13', 'iv-i-VII', ['iv', 'i', 'VII'], 'modern', 'minor', 'Minor subdominant groove'),
+  createProgression('min-mod-14', 'iv-III-VII-i', ['iv', 'III', 'VII', 'i'], 'modern', 'minor', 'Full natural minor cycle'),
+]
+
+// Get unique starting numerals for a category and key type
+export function getStartingNumerals(category: ProgressionCategory, keyType: ProgressionKeyType): string[] {
+  const progressions = CHORD_PROGRESSIONS.filter(
+    p => p.category === category && p.keyType === keyType
+  )
+  const numerals = [...new Set(progressions.map(p => p.startingNumeral))]
+
+  // Sort in a musical order
+  const majorOrder = ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°', 'bVI', 'bVII']
+  const minorOrder = ['i', 'ii°', 'III', 'iv', 'v', 'V', 'VI', 'VII']
+  const order = keyType === 'major' ? majorOrder : minorOrder
+
+  return numerals.sort((a, b) => {
+    const aIndex = order.indexOf(a)
+    const bIndex = order.indexOf(b)
+    if (aIndex === -1 && bIndex === -1) return 0
+    if (aIndex === -1) return 1
+    if (bIndex === -1) return -1
+    return aIndex - bIndex
+  })
+}
+
+// Get progressions filtered by category, key type, and starting numeral
+export function getProgressions(
+  category: ProgressionCategory,
+  keyType: ProgressionKeyType,
+  startingNumeral?: string
+): ChordProgression[] {
+  return CHORD_PROGRESSIONS.filter(p => {
+    if (p.category !== category) return false
+    if (p.keyType !== keyType) return false
+    if (startingNumeral && p.startingNumeral !== startingNumeral) return false
+    return true
+  })
+}
+
+// Get the actual note for a chord in a progression given the root
+export function getChordRootNote(rootNote: Note, chord: ChordInProgression, keyType: ProgressionKeyType): Note {
+  const rootIndex = NOTES.indexOf(rootNote)
+
+  // Semitone offsets for each scale degree in major
+  const majorOffsets: Record<number, number> = {
+    1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11
+  }
+
+  // Semitone offsets for each scale degree in minor (natural minor)
+  const minorOffsets: Record<number, number> = {
+    1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 10
+  }
+
+  const offsets = keyType === 'major' ? majorOffsets : minorOffsets
+  let semitones = offsets[chord.scaleDegree] || 0
+
+  // Handle flats (borrowed chords like bVII, bVI)
+  if (chord.numeral.startsWith('b')) {
+    semitones -= 1
+  }
+
+  const noteIndex = (rootIndex + semitones + 12) % 12
+  return NOTES[noteIndex]
 }

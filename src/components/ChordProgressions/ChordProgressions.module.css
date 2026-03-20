@@ -1,0 +1,197 @@
+.container {
+  /* Content inside CollapsibleSection */
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.select {
+  background: #2a2a2a;
+  border: 1px solid #3d3d3d;
+  border-radius: 4px;
+  color: #e0e0e0;
+  padding: 6px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.select:hover {
+  border-color: #555;
+}
+
+.keyLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #2d2d2d;
+}
+
+.progressionsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-bottom: 16px;
+}
+
+.progressionCard {
+  background: #2a2a2a;
+  border-radius: 6px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+}
+
+.progressionCard:hover {
+  background: #333;
+  border-color: #444;
+}
+
+.progressionCard.selected {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.progressionNumerals {
+  font-size: 14px;
+  font-weight: 500;
+  color: #888;
+  font-family: monospace;
+}
+
+.progressionNumerals .borrowed {
+  color: #a855f7;
+}
+
+.progressionDesc {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.selectedProgression {
+  background: #252525;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #3d3d3d;
+}
+
+.selectedHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.selectedHint {
+  font-size: 11px;
+  color: #666;
+}
+
+.chordsDisplay {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.chordColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+  padding: 12px 16px;
+  background: #2a2a2a;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+}
+
+.chordColumn:hover {
+  background: #333;
+  transform: translateY(-2px);
+}
+
+.chordColumn.activeChord {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.chordColumn.borrowedChord {
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.chordColumn.borrowedChord.activeChord {
+  border-color: #a855f7;
+  background: rgba(168, 85, 247, 0.2);
+}
+
+.chordNumeral {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  margin-bottom: 4px;
+  font-family: monospace;
+}
+
+.chordName {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.chordColumn.activeChord .chordName {
+  color: #ef4444;
+}
+
+.chordColumn.borrowedChord .chordNumeral {
+  color: #a855f7;
+}
+
+.chordColumn.borrowedChord.activeChord .chordName {
+  color: #a855f7;
+}
+
+.chordQuality {
+  font-size: 10px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+/* Scrollbar styling */
+.progressionsList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.progressionsList::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-radius: 3px;
+}
+
+.progressionsList::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 3px;
+}
+
+.progressionsList::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

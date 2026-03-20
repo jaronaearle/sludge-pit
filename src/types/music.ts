@@ -64,3 +64,24 @@ export type ScalePosition = 'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7
 
 // String number (1 = high E, 6 = low E)
 export type StringNumber = 1 | 2 | 3 | 4 | 5 | 6
+
+// Chord Progressions
+export type ProgressionCategory = 'classical' | 'modern'
+export type ProgressionKeyType = 'major' | 'minor'
+
+export interface ChordInProgression {
+  numeral: string        // "I", "IV", "vi", "bVII", etc.
+  quality: TriadType     // The chord quality
+  scaleDegree: number    // 1-7 (or modified for borrowed chords)
+  borrowed?: boolean     // Is this a borrowed chord?
+}
+
+export interface ChordProgression {
+  id: string
+  name: string                    // "Axis of Awesome", "50s Doo-Wop", etc.
+  chords: ChordInProgression[]
+  category: ProgressionCategory
+  keyType: ProgressionKeyType
+  startingNumeral: string         // "I", "vi", etc.
+  description?: string            // Optional description/genre info
+}

@@ -1,5 +1,5 @@
 import { Note, ScaleType, ModeType } from '../../types/music'
-import { getScaleNotes, getScaleDegreeInfo, getScaleIntervalFormula, SCALE_LABELS, getModeNotes, MODE_LABELS, MODE_PATTERNS, SCALE_PATTERNS } from '../../utils/music'
+import { getScaleNotes, getScaleDegreeInfo, getScaleIntervalFormula, SCALE_LABELS, getModeNotes, MODE_LABELS, MODE_PATTERNS, SCALE_PATTERNS, getNoteDisplay } from '../../utils/music'
 import styles from './ScaleReference.module.css'
 
 interface ScaleReferenceProps {
@@ -68,7 +68,7 @@ export function ScaleReference({ rootNote, scaleType, modeType }: ScaleReference
   return (
     <div className={styles.scaleReference}>
       <div className={styles.header}>
-        <span className={styles.title}>{rootNote} {label}</span>
+        <span className={styles.title}>{getNoteDisplay(rootNote)} {label}</span>
         <span className={styles.formula}>{formula}</span>
       </div>
 
@@ -79,7 +79,7 @@ export function ScaleReference({ rootNote, scaleType, modeType }: ScaleReference
             className={`${styles.noteColumn} ${info.isChordTone ? styles.chordTone : ''}`}
           >
             <span className={styles.degree}>{info.degree}</span>
-            <span className={styles.noteName}>{info.note}</span>
+            <span className={styles.noteName}>{getNoteDisplay(info.note)}</span>
             <span className={styles.interval}>{info.intervalName}</span>
           </div>
         ))}
