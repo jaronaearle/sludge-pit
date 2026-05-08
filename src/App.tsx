@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   Note,
   SelectedIntervals,
@@ -80,6 +80,7 @@ function App() {
   const [scalePosition, setScalePosition] = useState<ScalePosition>("all");
   const [singleStringMode, setSingleStringMode] = useState(false);
   const [selectedString, setSelectedString] = useState<StringNumber>(6); // Default to low E
+  const [chordProgressionsResetKey, setChordProgressionsResetKey] = useState(0);
 
   // Clear chords when selecting a scale
   const clearChords = () => {
@@ -202,22 +203,23 @@ function App() {
     setScalePosition("all");
     setSingleStringMode(false);
     setSelectedString(6);
+    setChordProgressionsResetKey((k) => k + 1);
   };
 
   const currentTuning = TUNINGS[tuningId];
   const referenceTuning = TUNINGS["e_standard"];
 
   // Handle chord selection from KeyReference (keeps rootNote, only changes chord)
-  const handleChordSelect = (selectedChordRoot: Note, quality: TriadType) => {
-    setChordRoot(selectedChordRoot); // Only change chord root, not key root
+  const handleChordSelect = useCallback((selectedChordRoot: Note, quality: TriadType) => {
+    setChordRoot(selectedChordRoot);
     setTriadType(quality);
-    // Clear other chord types to focus on the selected triad
     setDyadType("none");
     setSeventhChordType("none");
     setExtendedChordType("none");
-    clearScales();
+    setScaleType("none");
+    setModeType("none");
     setInversionType("root");
-  };
+  }, []);
 
   return (
     <div className={styles.app}>
@@ -270,6 +272,7 @@ function App() {
           onResetScales={handleResetScales}
           onResetChords={handleResetChords}
           onChordSelect={handleChordSelect}
+          chordProgressionsResetKey={chordProgressionsResetKey}
         />
 
         <KeyReference

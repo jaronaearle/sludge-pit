@@ -91,6 +91,7 @@ interface ControlsProps {
   onResetScales: () => void;
   onResetChords: () => void;
   onChordSelect: (chordRoot: Note, quality: TriadType) => void;
+  chordProgressionsResetKey: number;
 }
 
 export function Controls({
@@ -136,6 +137,7 @@ export function Controls({
   onResetScales,
   onResetChords,
   onChordSelect,
+  chordProgressionsResetKey,
 }: ControlsProps) {
   const [showNotationGuide, setShowNotationGuide] = useState(false);
 
@@ -469,7 +471,7 @@ export function Controls({
           </div>
         </CollapsibleSection>
 
-        <ChordProgressions rootNote={rootNote} onChordSelect={onChordSelect} />
+        <ChordProgressions key={chordProgressionsResetKey} rootNote={rootNote} onChordSelect={onChordSelect} />
       </div>
     </div>
   );

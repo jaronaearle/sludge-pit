@@ -53,6 +53,16 @@ export function ChordProgressions({ rootNote, onChordSelect }: ChordProgressions
     setSelectedChordIndex(index)
   }
 
+  const handleReset = () => {
+    setCategory('modern')
+    setKeyType('major')
+    setStartingNumeral('')
+    setSelectedProgression(null)
+    setSelectedChordIndex(0)
+  }
+
+  const hasActiveState = selectedProgression !== null || category !== 'modern' || keyType !== 'major' || startingNumeral !== ''
+
   const getChordDisplayName = (chord: ChordInProgression): string => {
     const chordRoot = getChordRootNote(rootNote, chord, keyType)
     const qualitySuffix = chord.quality === 'minor' ? 'm'
@@ -105,6 +115,12 @@ export function ChordProgressions({ rootNote, onChordSelect }: ChordProgressions
               ))}
             </select>
           </label>
+
+          {hasActiveState && (
+            <button className={styles.clearButton} onClick={handleReset}>
+              Clear
+            </button>
+          )}
         </div>
 
         <div className={styles.keyLabel}>
