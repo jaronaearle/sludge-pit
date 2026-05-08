@@ -64,6 +64,10 @@
 .string:nth-child(6)::after { height: 4px; }
 .string:nth-child(7)::after { height: 4.5px; }
 
+.dimmedString {
+  opacity: 0.15;
+}
+
 .nut {
   width: 60px;
   flex-shrink: 0;

@@ -55,7 +55,7 @@ export interface FretPosition {
   note: Note
 }
 
-export type FretCount = 12 | 18 | 24
+export type FretCount = 12 | 18
 
 export type CAGEDShape = 'C' | 'A' | 'G' | 'E' | 'D'
 

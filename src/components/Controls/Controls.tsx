@@ -129,10 +129,10 @@ export function Controls({
   onCagedShapeChange,
   scalePosition: _scalePosition,
   onScalePositionChange: _onScalePositionChange,
-  singleStringMode: _singleStringMode,
-  onSingleStringModeChange: _onSingleStringModeChange,
-  selectedString: _selectedString,
-  onSelectedStringChange: _onSelectedStringChange,
+  singleStringMode,
+  onSingleStringModeChange,
+  selectedString,
+  onSelectedStringChange,
   onReset,
   onResetScales,
   onResetChords,
@@ -206,7 +206,34 @@ export function Controls({
               >
                 <option value={12}>12</option>
                 <option value={18}>18</option>
-                <option value={24}>24</option>
+              </select>
+            </label>
+
+            <label className={styles.label}>
+              String:
+              <select
+                className={styles.selectSmall}
+                value={singleStringMode ? selectedString : 0}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  if (val === 0) {
+                    onSingleStringModeChange(false);
+                  } else {
+                    onSingleStringModeChange(true);
+                    onSelectedStringChange(val as StringNumber);
+                  }
+                }}
+              >
+                <option value={0}>All</option>
+                {([6, 5, 4, 3, 2, 1] as StringNumber[]).map((str) => {
+                  const tuningNotes = TUNINGS[tuningId].notes;
+                  const note = tuningNotes[6 - str];
+                  return (
+                    <option key={str} value={str}>
+                      {str} ({getNoteDisplay(note)})
+                    </option>
+                  );
+                })}
               </select>
             </label>
           </div>

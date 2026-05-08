@@ -380,12 +380,9 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
       {[...tuning].reverse().map((openNote, stringIndex) => {
         // Convert stringIndex to actual string number (1-6)
         // stringIndex 0 = high E (string 1), stringIndex 5 = low E (string 6)
-        const actualStringNumber = (6 - stringIndex) as StringNumber
+        const actualStringNumber = (stringIndex + 1) as StringNumber
 
-        // In single string mode, only show the selected string
-        if (singleStringMode && actualStringNumber !== selectedString) {
-          return null
-        }
+        const isDimmed = singleStringMode && actualStringNumber !== selectedString
 
         const openNoteDisplay = shouldShowNote(openNote)
 
@@ -397,7 +394,7 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
           : true
 
         return (
-          <div key={stringIndex} className={styles.string}>
+          <div key={stringIndex} className={`${styles.string} ${isDimmed ? styles.dimmedString : ''}`}>
             {/* Nut / Open string */}
             <div className={styles.nut}>
               {openNoteDisplay.show && isOpenInPosition ? (
