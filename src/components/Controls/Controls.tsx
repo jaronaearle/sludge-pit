@@ -145,6 +145,7 @@ export function Controls({
   onPracticeModeChange,
 }: ControlsProps) {
   const [showNotationGuide, setShowNotationGuide] = useState(false);
+  const [showPractice, setShowPractice] = useState(false);
 
   const hasChord =
     triadType !== "none" ||
@@ -346,13 +347,24 @@ export function Controls({
               </select>
             </label>
 
+            {modeType !== 'none' && (
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={showPractice}
+                  onChange={(e) => setShowPractice(e.target.checked)}
+                  className={styles.checkbox}
+                />
+                Practice
+              </label>
+            )}
             {(scaleType !== 'none' || modeType !== 'none') && (
               <button className={styles.sectionResetButton} onClick={onResetScales}>
                 Clear
               </button>
             )}
           </div>
-          {modeType !== 'none' && (
+          {modeType !== 'none' && showPractice && (
             <ModePlayer
               modeType={modeType}
               selectedString={selectedString}
