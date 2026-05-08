@@ -93,6 +93,8 @@ interface ControlsProps {
   onResetChords: () => void;
   onChordSelect: (chordRoot: Note, quality: TriadType) => void;
   chordProgressionsResetKey: number;
+  practiceActive: boolean;
+  onPracticeModeChange: (active: boolean) => void;
 }
 
 export function Controls({
@@ -139,6 +141,8 @@ export function Controls({
   onResetChords,
   onChordSelect,
   chordProgressionsResetKey,
+  practiceActive,
+  onPracticeModeChange,
 }: ControlsProps) {
   const [showNotationGuide, setShowNotationGuide] = useState(false);
 
@@ -348,10 +352,19 @@ export function Controls({
               </button>
             )}
           </div>
-          {modeType !== 'none' && <ModePlayer modeType={modeType} />}
+          {modeType !== 'none' && (
+            <ModePlayer
+              modeType={modeType}
+              selectedString={selectedString}
+              onModeTypeChange={onModeTypeChange}
+              onSingleStringModeChange={onSingleStringModeChange}
+              onSelectedStringChange={onSelectedStringChange}
+              onPracticeModeChange={onPracticeModeChange}
+            />
+          )}
         </CollapsibleSection>
 
-        <CollapsibleSection title="Chords & Dyads" defaultOpen={false}>
+        {!practiceActive && <CollapsibleSection title="Chords & Dyads" defaultOpen={false}>
           <div className={styles.sectionContent}>
             <label className={styles.label}>
               Dyad:
@@ -460,9 +473,9 @@ export function Controls({
               </button>
             )}
           </div>
-        </CollapsibleSection>
+        </CollapsibleSection>}
 
-        <CollapsibleSection title="Intervals" defaultOpen={false}>
+        {!practiceActive && <CollapsibleSection title="Intervals" defaultOpen={false}>
           <div className={styles.sectionContent}>
             <div className={styles.intervalCheckboxes}>
               {INTERVALS.map((interval) => {
@@ -498,9 +511,9 @@ export function Controls({
               </button>
             )}
           </div>
-        </CollapsibleSection>
+        </CollapsibleSection>}
 
-        <ChordProgressions key={chordProgressionsResetKey} rootNote={rootNote} onChordSelect={onChordSelect} />
+        {!practiceActive && <ChordProgressions key={chordProgressionsResetKey} rootNote={rootNote} onChordSelect={onChordSelect} />}
       </div>
     </div>
   );

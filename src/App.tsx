@@ -81,6 +81,7 @@ function App() {
   const [singleStringMode, setSingleStringMode] = useState(false);
   const [selectedString, setSelectedString] = useState<StringNumber>(6); // Default to low E
   const [chordProgressionsResetKey, setChordProgressionsResetKey] = useState(0);
+  const [practiceActive, setPracticeActive] = useState(false);
 
   // Clear chords when selecting a scale
   const clearChords = () => {
@@ -206,6 +207,7 @@ function App() {
     setSingleStringMode(false);
     setSelectedString(6);
     setChordProgressionsResetKey((k) => k + 1);
+    setPracticeActive(false);
   };
 
   const currentTuning = TUNINGS[tuningId];
@@ -275,14 +277,18 @@ function App() {
           onResetChords={handleResetChords}
           onChordSelect={handleChordSelect}
           chordProgressionsResetKey={chordProgressionsResetKey}
+          practiceActive={practiceActive}
+          onPracticeModeChange={setPracticeActive}
         />
 
-        <KeyReference
-          rootNote={rootNote}
-          selectedChordRoot={chordRoot}
-          selectedTriadType={triadType}
-          onChordSelect={handleChordSelect}
-        />
+        {!practiceActive && (
+          <KeyReference
+            rootNote={rootNote}
+            selectedChordRoot={chordRoot}
+            selectedTriadType={triadType}
+            onChordSelect={handleChordSelect}
+          />
+        )}
 
         <ScaleReference
           rootNote={rootNote}
