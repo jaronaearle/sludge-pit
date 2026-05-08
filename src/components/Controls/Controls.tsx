@@ -46,6 +46,7 @@ import {
 import { CollapsibleSection } from "../CollapsibleSection/CollapsibleSection";
 import { ChordProgressions } from "../ChordProgressions/ChordProgressions";
 import { NotationGuide } from "../NotationGuide/NotationGuide";
+import { ModePlayer } from "../ModePlayer/ModePlayer";
 import styles from "./Controls.module.css";
 
 interface ControlsProps {
@@ -347,6 +348,7 @@ export function Controls({
               </button>
             )}
           </div>
+          {modeType !== 'none' && <ModePlayer modeType={modeType} />}
         </CollapsibleSection>
 
         <CollapsibleSection title="Chords & Dyads" defaultOpen={false}>

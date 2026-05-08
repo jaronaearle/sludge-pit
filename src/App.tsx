@@ -21,7 +21,7 @@ import { KeyReference } from "./components/KeyReference/KeyReference";
 import { ScaleReference } from "./components/ScaleReference/ScaleReference";
 import { ChordVoicings } from "./components/ChordVoicings/ChordVoicings";
 import { CircleOfFifths } from "./components/CircleOfFifths/CircleOfFifths";
-import { TUNINGS } from "./utils/music";
+import { TUNINGS, MODE_TRACK_ROOTS } from "./utils/music";
 import styles from "./App.module.css";
 
 // Fun dynamic names - randomly picked on each load
@@ -110,7 +110,9 @@ function App() {
   const handleModeTypeChange = (mode: ModeType) => {
     if (mode !== "none") {
       clearChords();
-      setScaleType("none"); // Only one scale/mode at a time
+      setScaleType("none");
+      setRootNote(MODE_TRACK_ROOTS[mode]);
+      setChordRoot(MODE_TRACK_ROOTS[mode]);
     }
     setModeType(mode);
   };

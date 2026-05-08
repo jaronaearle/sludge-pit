@@ -500,6 +500,17 @@ export const MODE_TYPES: Exclude<ModeType, 'none'>[] = [
   'locrian',
 ]
 
+// Root notes for the mode backing tracks (all modes of C major — no accidentals)
+export const MODE_TRACK_ROOTS: Record<Exclude<ModeType, 'none'>, Note> = {
+  ionian: 'C',
+  dorian: 'D',
+  phrygian: 'E',
+  lydian: 'F',
+  mixolydian: 'G',
+  aeolian: 'A',
+  locrian: 'B',
+}
+
 export function getModeNotes(root: Note, modeType: Exclude<ModeType, 'none'>): Note[] {
   const rootIndex = NOTES.indexOf(root)
   const pattern = MODE_PATTERNS[modeType]
