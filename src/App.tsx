@@ -21,6 +21,7 @@ import { KeyReference } from "./components/KeyReference/KeyReference";
 import { ScaleReference } from "./components/ScaleReference/ScaleReference";
 import { ChordVoicings } from "./components/ChordVoicings/ChordVoicings";
 import { CircleOfFifths } from "./components/CircleOfFifths/CircleOfFifths";
+import { ChordDetector } from "./components/ChordDetector/ChordDetector";
 import { TUNINGS, MODE_TRACK_ROOTS } from "./utils/music";
 import styles from "./App.module.css";
 
@@ -82,6 +83,8 @@ function App() {
   const [selectedString, setSelectedString] = useState<StringNumber>(6); // Default to low E
   const [chordProgressionsResetKey, setChordProgressionsResetKey] = useState(0);
   const [practiceActive, setPracticeActive] = useState(false);
+  const [detectionMode, setDetectionMode] = useState(false);
+  const [detectionFrets, setDetectionFrets] = useState<{ string: StringNumber; fret: number; note: Note }[]>([]);
 
   // Clear chords when selecting a scale
   const clearChords = () => {
@@ -208,6 +211,20 @@ function App() {
     setSelectedString(6);
     setChordProgressionsResetKey((k) => k + 1);
     setPracticeActive(false);
+    setDetectionMode(false);
+    setDetectionFrets([]);
+  };
+
+  const toggleDetectionMode = () => {
+    setDetectionMode(prev => !prev);
+    setDetectionFrets([]);
+  };
+
+  const handleDetectionFretToggle = (string: StringNumber, fret: number, note: Note) => {
+    setDetectionFrets(prev => {
+      const idx = prev.findIndex(f => f.string === string && f.fret === fret);
+      return idx >= 0 ? prev.filter((_, i) => i !== idx) : [...prev, { string, fret, note }];
+    });
   };
 
   const currentTuning = TUNINGS[tuningId];
@@ -279,6 +296,8 @@ function App() {
           chordProgressionsResetKey={chordProgressionsResetKey}
           practiceActive={practiceActive}
           onPracticeModeChange={setPracticeActive}
+          detectionMode={detectionMode}
+          onToggleDetection={toggleDetectionMode}
         />
 
         {!practiceActive && (
@@ -343,7 +362,17 @@ function App() {
           singleStringMode={singleStringMode}
           selectedString={selectedString}
           label={tuningId !== "e_standard" ? currentTuning.name : undefined}
+          detectionMode={detectionMode}
+          detectionFrets={detectionFrets}
+          onDetectionFretToggle={handleDetectionFretToggle}
         />
+
+        {detectionMode && (
+          <ChordDetector
+            detectionFrets={detectionFrets}
+            onClear={() => setDetectionFrets([])}
+          />
+        )}
 
         <ChordVoicings
           rootNote={chordRoot}

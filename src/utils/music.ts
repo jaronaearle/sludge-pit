@@ -1201,3 +1201,73 @@ export function getChordRootNote(rootNote: Note, chord: ChordInProgression, keyT
   const noteIndex = (rootIndex + semitones + 12) % 12
   return NOTES[noteIndex]
 }
+
+// ============================================
+// CHORD IDENTIFICATION
+// ============================================
+
+export interface ChordMatch {
+  root: Note
+  name: string
+  type: 'dyad' | 'triad' | 'seventh' | 'extended'
+  partial: boolean  // true = 5th was omitted
+}
+
+export function identifyChord(notes: Note[]): ChordMatch[] {
+  const unique = [...new Set(notes)] as Note[]
+  if (unique.length < 2) return []
+
+  const matches: ChordMatch[] = []
+
+  for (const root of unique) {
+    const rootIdx = NOTES.indexOf(root)
+    const intervals = unique.map(n => (NOTES.indexOf(n) - rootIdx + 12) % 12)
+    const intervalSet = new Set(intervals)
+    const isExact = (pattern: number[]) =>
+      pattern.length === unique.length &&
+      pattern.every(i => intervalSet.has(i)) &&
+      intervals.every(i => pattern.includes(i))
+
+    if (unique.length === 2) {
+      for (const [key, pattern] of Object.entries(DYAD_PATTERNS)) {
+        if (isExact(pattern))
+          matches.push({ root, name: `${getNoteDisplay(root)} ${DYAD_LABELS[key as Exclude<DyadType, 'none'>]}`, type: 'dyad', partial: false })
+      }
+    }
+
+    if (unique.length === 3) {
+      // Exact triad match
+      for (const [key, pattern] of Object.entries(TRIAD_PATTERNS)) {
+        if (isExact(pattern))
+          matches.push({ root, name: `${getNoteDisplay(root)} ${TRIAD_LABELS[key as Exclude<TriadType, 'none'>]}`, type: 'triad', partial: false })
+      }
+      // 7th chord with omitted 5th (very common voicing)
+      for (const [key, pattern] of Object.entries(SEVENTH_CHORD_PATTERNS)) {
+        const without5 = pattern.filter(i => i !== 7)
+        if (without5.length === 3 && without5.every(i => intervalSet.has(i)) && intervals.every(i => pattern.includes(i)))
+          matches.push({ root, name: `${getNoteDisplay(root)} ${SEVENTH_CHORD_LABELS[key as Exclude<SeventhChordType, 'none'>]}`, type: 'seventh', partial: true })
+      }
+    }
+
+    if (unique.length === 4) {
+      for (const [key, pattern] of Object.entries(SEVENTH_CHORD_PATTERNS)) {
+        if (isExact(pattern))
+          matches.push({ root, name: `${getNoteDisplay(root)} ${SEVENTH_CHORD_LABELS[key as Exclude<SeventhChordType, 'none'>]}`, type: 'seventh', partial: false })
+      }
+      for (const [key, pattern] of Object.entries(EXTENDED_CHORD_PATTERNS)) {
+        if (isExact(pattern))
+          matches.push({ root, name: `${getNoteDisplay(root)} ${EXTENDED_CHORD_LABELS[key as Exclude<ExtendedChordType, 'none'>]}`, type: 'extended', partial: false })
+      }
+    }
+
+    if (unique.length >= 5) {
+      for (const [key, pattern] of Object.entries(EXTENDED_CHORD_PATTERNS)) {
+        if (isExact(pattern))
+          matches.push({ root, name: `${getNoteDisplay(root)} ${EXTENDED_CHORD_LABELS[key as Exclude<ExtendedChordType, 'none'>]}`, type: 'extended', partial: false })
+      }
+    }
+  }
+
+  // Exact matches first, partial (no 5th) after
+  return matches.sort((a, b) => Number(a.partial) - Number(b.partial))
+}

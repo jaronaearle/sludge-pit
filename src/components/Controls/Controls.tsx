@@ -95,6 +95,8 @@ interface ControlsProps {
   chordProgressionsResetKey: number;
   practiceActive: boolean;
   onPracticeModeChange: (active: boolean) => void;
+  detectionMode: boolean;
+  onToggleDetection: () => void;
 }
 
 export function Controls({
@@ -143,6 +145,8 @@ export function Controls({
   chordProgressionsResetKey,
   practiceActive,
   onPracticeModeChange,
+  detectionMode,
+  onToggleDetection,
 }: ControlsProps) {
   const [showNotationGuide, setShowNotationGuide] = useState(false);
   const [showPractice, setShowPractice] = useState(false);
@@ -297,6 +301,13 @@ export function Controls({
               onClick={() => setShowNotationGuide(true)}
             >
               Notation Guide
+            </button>
+
+            <button
+              className={`${styles.detectButton} ${detectionMode ? styles.detectButtonActive : ''}`}
+              onClick={onToggleDetection}
+            >
+              {detectionMode ? 'Exit Detect' : 'Detect Chord'}
             </button>
 
             <button className={styles.resetButton} onClick={onReset}>

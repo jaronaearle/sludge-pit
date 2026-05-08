@@ -24,6 +24,9 @@ interface FretboardProps {
   selectedString?: StringNumber
   label?: string
   compact?: boolean
+  detectionMode?: boolean
+  detectionFrets?: { string: StringNumber; fret: number }[]
+  onDetectionFretToggle?: (string: StringNumber, fret: number, note: Note) => void
 }
 
 // Standard fret markers (single dots and double dots at 12, 24)
@@ -67,7 +70,7 @@ const EXTENDED_CHORD_DEGREE_COLORS: Record<number, string> = {
   7: '#818cf8', // 13th - indigo
 }
 
-export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, selectedIntervals, scaleType, dyadType, triadType, seventhChordType, extendedChordType, modeType, inversionType, tuning, fretCount, showCAGED = false, cagedShape = 'all', scalePosition = 'all', singleStringMode = false, selectedString = 6, label, compact = false }: FretboardProps) {
+export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, selectedIntervals, scaleType, dyadType, triadType, seventhChordType, extendedChordType, modeType, inversionType, tuning, fretCount, showCAGED = false, cagedShape = 'all', scalePosition = 'all', singleStringMode = false, selectedString = 6, label, compact = false, detectionMode = false, detectionFrets = [], onDetectionFretToggle }: FretboardProps) {
   // Use chordRoot for chord display, rootNote for scales/intervals
   const effectiveChordRoot = chordRoot ?? rootNote
   const getIntervalForNote = (note: Note): Interval => {
@@ -348,9 +351,11 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
     return null
   }
 
-  const fretboardClass = compact
-    ? `${styles.fretboard} ${styles.compact}`
-    : styles.fretboard
+  const fretboardClass = [
+    styles.fretboard,
+    compact ? styles.compact : '',
+    detectionMode ? styles.detectionMode : '',
+  ].filter(Boolean).join(' ')
 
   return (
     <div className={fretboardClass}>
@@ -393,11 +398,21 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
           ? isFretInScalePosition(0, rootNote, activeScaleType, scalePosition, tuning)
           : true
 
+        const isOpenDetected = detectionFrets.some(f => f.string === actualStringNumber && f.fret === 0)
+
         return (
           <div key={stringIndex} className={`${styles.string} ${isDimmed ? styles.dimmedString : ''}`}>
             {/* Nut / Open string */}
-            <div className={styles.nut}>
-              {openNoteDisplay.show && isOpenInPosition ? (
+            <div
+              className={styles.nut}
+              onClick={detectionMode ? () => onDetectionFretToggle?.(actualStringNumber, 0, openNote) : undefined}
+              data-note={detectionMode && !isOpenDetected ? getNoteDisplay(openNote) : undefined}
+            >
+              {detectionMode ? (
+                isOpenDetected
+                  ? <span className={styles.detectionNote}>{getNoteDisplay(openNote)}</span>
+                  : <span className={styles.openNote}>{getNoteDisplay(openNote)}</span>
+              ) : openNoteDisplay.show && isOpenInPosition ? (
                 <span
                   className={getNoteClass(openNoteDisplay)}
                   style={{ backgroundColor: getNoteColor(openNoteDisplay) }}
@@ -414,6 +429,7 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
               const note = getNoteAtFret(openNote, fret + 1)
               const noteDisplay = shouldShowNote(note)
               const cagedOverlay = getCAGEDOverlay(fret + 1)
+              const isDetected = detectionFrets.some(f => f.string === actualStringNumber && f.fret === fret + 1)
 
               // Check if fret is in the current scale position
               const isInPosition = activeScaleType
@@ -424,16 +440,22 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
                 <div
                   key={fret}
                   className={styles.fret}
-                  style={cagedOverlay ? { backgroundColor: `${cagedOverlay.color}20` } : undefined}
+                  style={cagedOverlay && !detectionMode ? { backgroundColor: `${cagedOverlay.color}20` } : undefined}
+                  data-note={detectionMode && !isDetected ? getNoteDisplay(note) : undefined}
+                  onClick={detectionMode ? () => onDetectionFretToggle?.(actualStringNumber, fret + 1, note) : undefined}
                 >
                   <div className={styles.fretWire} />
-                  {noteDisplay.show && isInPosition && (
-                    <span
-                      className={getNoteClass(noteDisplay)}
-                      style={{ backgroundColor: getNoteColor(noteDisplay) }}
-                    >
-                      {getNoteDisplayText(note, noteDisplay)}
-                    </span>
+                  {detectionMode ? (
+                    isDetected && <span className={styles.detectionNote}>{getNoteDisplay(note)}</span>
+                  ) : (
+                    noteDisplay.show && isInPosition && (
+                      <span
+                        className={getNoteClass(noteDisplay)}
+                        style={{ backgroundColor: getNoteColor(noteDisplay) }}
+                      >
+                        {getNoteDisplayText(note, noteDisplay)}
+                      </span>
+                    )
                   )}
                 </div>
               )
