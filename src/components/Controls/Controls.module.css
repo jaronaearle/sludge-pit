@@ -257,3 +257,24 @@
 .guideButton:active {
   background: #1d3a2e;
 }
+
+.correctionButton {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #1e2a3a;
+  color: #93c5fd;
+  border: 1px solid #2a4a6a;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.correctionButton:hover {
+  background: #263a4e;
+  border-color: #3a6a8a;
+}
+
+.correctionButton:active {
+  background: #152030;
+}

@@ -537,6 +537,7 @@ export function Controls({
         </CollapsibleSection>}
 
         {!practiceActive && <ChordProgressions key={chordProgressionsResetKey} rootNote={rootNote} onChordSelect={onChordSelect} />}
+
       </div>
     </div>
   );

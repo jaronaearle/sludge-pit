@@ -22,6 +22,7 @@ import { ScaleReference } from "./components/ScaleReference/ScaleReference";
 import { ChordVoicings } from "./components/ChordVoicings/ChordVoicings";
 import { CircleOfFifths } from "./components/CircleOfFifths/CircleOfFifths";
 import { ChordDetector } from "./components/ChordDetector/ChordDetector";
+import { CorrectionForm } from "./components/CorrectionForm/CorrectionForm";
 import { TUNINGS, MODE_TRACK_ROOTS } from "./utils/music";
 import styles from "./App.module.css";
 
@@ -85,6 +86,7 @@ function App() {
   const [practiceActive, setPracticeActive] = useState(false);
   const [detectionMode, setDetectionMode] = useState(false);
   const [detectionFrets, setDetectionFrets] = useState<{ string: StringNumber; fret: number; note: Note }[]>([]);
+  const [showCorrectionForm, setShowCorrectionForm] = useState(false);
 
   // Clear chords when selecting a scale
   const clearChords = () => {
@@ -387,7 +389,17 @@ function App() {
         />
       </main>
 
-      <footer className={styles.footer}>Made with ❤️ by Jar</footer>
+      <footer className={styles.footer}>
+        <div>Made with ❤️ by Jar</div>
+        <button className={styles.correctionButton} onClick={() => setShowCorrectionForm(true)}>
+          Report a correction
+        </button>
+      </footer>
+
+      <CorrectionForm
+        isOpen={showCorrectionForm}
+        onClose={() => setShowCorrectionForm(false)}
+      />
     </div>
   );
 }

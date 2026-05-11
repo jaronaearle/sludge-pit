@@ -351,10 +351,16 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
     return null
   }
 
+  const hasActiveContext =
+    scaleType !== 'none' || modeType !== 'none' ||
+    dyadType !== 'none' || triadType !== 'none' ||
+    seventhChordType !== 'none' || extendedChordType !== 'none'
+
   const fretboardClass = [
     styles.fretboard,
     compact ? styles.compact : '',
     detectionMode ? styles.detectionMode : '',
+    hasActiveContext ? styles.hasContext : '',
   ].filter(Boolean).join(' ')
 
   return (
