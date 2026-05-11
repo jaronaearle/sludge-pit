@@ -69,6 +69,19 @@
   flex-shrink: 0;
 }
 
+.volumeLabel {
+  font-size: 12px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.volumeSlider {
+  width: 70px;
+  accent-color: #ef4444;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 /* Practice mode */
 
 .practiceButtons {

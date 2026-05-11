@@ -49,6 +49,7 @@ export function ModePlayer({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [practiceMode, setPracticeMode] = useState<PracticeMode>("off");
+  const [volume, setVolume] = useState(1);
   const pendingAutoPlay = useRef(false);
 
   // Reload audio when modeType changes; auto-play if practice mode triggered the change
@@ -192,6 +193,20 @@ export function ModePlayer({
         <span className={styles.key}>
           Key: {getNoteDisplay(MODE_TRACK_ROOTS[modeType])}
         </span>
+        <span className={styles.volumeLabel}>🔊</span>
+        <input
+          type="range"
+          className={styles.volumeSlider}
+          min={0}
+          max={1}
+          step={0.01}
+          value={volume}
+          onChange={e => {
+            const v = Number(e.target.value);
+            setVolume(v);
+            if (audioRef.current) audioRef.current.volume = v;
+          }}
+        />
       </div>
 
       {practiceMode === "off" ? (
