@@ -135,3 +135,25 @@
   background: #4a2020;
   border-color: #7a3d3d;
 }
+
+.randomizeLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #7dd3fc;
+  cursor: pointer;
+  user-select: none;
+  opacity: 0.8;
+}
+
+.randomizeLabel:hover {
+  opacity: 1;
+}
+
+.randomizeCheckbox {
+  width: 13px;
+  height: 13px;
+  accent-color: #7dd3fc;
+  cursor: pointer;
+}

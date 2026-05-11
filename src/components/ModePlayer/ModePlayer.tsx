@@ -19,6 +19,7 @@ const MODE_TRACKS: Record<Exclude<ModeType, "none">, string> = {
 };
 
 const ALL_STRINGS: StringNumber[] = [1, 2, 3, 4, 5, 6];
+const ORDERED_STRINGS: StringNumber[] = [6, 5, 4, 3, 2, 1];
 
 function pickRandom<T>(arr: T[], exclude?: T): T {
   const pool = exclude !== undefined ? arr.filter((x) => x !== exclude) : arr;
@@ -50,7 +51,26 @@ export function ModePlayer({
   const [duration, setDuration] = useState(0);
   const [practiceMode, setPracticeMode] = useState<PracticeMode>("off");
   const [volume, setVolume] = useState(1);
+  const [randomizeStrings, setRandomizeStrings] = useState(false);
   const pendingAutoPlay = useRef(false);
+  const midTrackSwitched = useRef(false);
+  const practiceModeRef = useRef<PracticeMode>("off");
+  const selectedStringRef = useRef<StringNumber>(selectedString);
+  const randomizeStringsRef = useRef(false);
+  const orderedStringIndexRef = useRef(0);
+
+  useEffect(() => { practiceModeRef.current = practiceMode; }, [practiceMode]);
+  useEffect(() => { selectedStringRef.current = selectedString; }, [selectedString]);
+  useEffect(() => { randomizeStringsRef.current = randomizeStrings; }, [randomizeStrings]);
+
+  const nextSingleString = (current: StringNumber): StringNumber => {
+    if (randomizeStringsRef.current) {
+      return pickRandom(ALL_STRINGS, current);
+    }
+    const nextIndex = (orderedStringIndexRef.current + 1) % ORDERED_STRINGS.length;
+    orderedStringIndexRef.current = nextIndex;
+    return ORDERED_STRINGS[nextIndex];
+  };
 
   // Reload audio when modeType changes; auto-play if practice mode triggered the change
   useEffect(() => {
@@ -60,6 +80,7 @@ export function ModePlayer({
     audio.load();
     setCurrentTime(0);
     setDuration(0);
+    midTrackSwitched.current = false;
     if (!pendingAutoPlay.current) {
       setIsPlaying(false);
     }
@@ -86,7 +107,21 @@ export function ModePlayer({
   };
 
   const handleTimeUpdate = () => {
-    if (audioRef.current) setCurrentTime(audioRef.current.currentTime);
+    const audio = audioRef.current;
+    if (!audio) return;
+    setCurrentTime(audio.currentTime);
+
+    // Switch string at the midpoint (min 60s, max half of track duration)
+    if (
+      practiceModeRef.current !== "off" &&
+      !midTrackSwitched.current &&
+      duration > 0 &&
+      audio.currentTime >= Math.min(60, duration / 2)
+    ) {
+      midTrackSwitched.current = true;
+      const newStr = nextSingleString(selectedStringRef.current);
+      onSelectedStringChange(newStr);
+    }
   };
 
   const handleLoadedMetadata = () => {
@@ -95,8 +130,9 @@ export function ModePlayer({
 
   const handleEnded = () => {
     if (practiceMode === "single") {
-      const newStr = pickRandom(ALL_STRINGS, selectedString);
+      const newStr = nextSingleString(selectedString);
       onSelectedStringChange(newStr);
+      midTrackSwitched.current = false;
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
         audioRef.current.play();
@@ -123,7 +159,9 @@ export function ModePlayer({
   };
 
   const startSinglePractice = () => {
-    const str = pickRandom(ALL_STRINGS);
+    const str = randomizeStrings ? pickRandom(ALL_STRINGS) : ORDERED_STRINGS[0];
+    orderedStringIndexRef.current = 0;
+    midTrackSwitched.current = false;
     onSingleStringModeChange(true);
     onSelectedStringChange(str);
     setPracticeMode("single");
@@ -137,6 +175,7 @@ export function ModePlayer({
   const startRandomPractice = () => {
     const newMode = pickRandom(MODE_TYPES, modeType);
     const str = pickRandom(ALL_STRINGS);
+    midTrackSwitched.current = false;
     pendingAutoPlay.current = true;
     onSingleStringModeChange(true);
     onSelectedStringChange(str);
@@ -223,6 +262,15 @@ export function ModePlayer({
           >
             Random Mode
           </button>
+          <label className={styles.randomizeLabel}>
+            <input
+              type="checkbox"
+              checked={randomizeStrings}
+              onChange={e => setRandomizeStrings(e.target.checked)}
+              className={styles.randomizeCheckbox}
+            />
+            Randomize strings
+          </label>
         </div>
       ) : (
         <div className={styles.practiceActive}>
@@ -231,6 +279,17 @@ export function ModePlayer({
               ? `${MODE_LABELS[modeType]}  ·  String ${selectedString}`
               : `String ${selectedString}`}
           </span>
+          {practiceMode === "single" && (
+            <label className={styles.randomizeLabel}>
+              <input
+                type="checkbox"
+                checked={randomizeStrings}
+                onChange={e => setRandomizeStrings(e.target.checked)}
+                className={styles.randomizeCheckbox}
+              />
+              Randomize
+            </label>
+          )}
           <button className={styles.stopButton} onClick={stopPractice}>
             Stop
           </button>
