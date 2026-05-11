@@ -41,7 +41,11 @@ export type ModeType = 'none' | 'ionian' | 'dorian' | 'phrygian' | 'lydian' | 'm
 
 export type InversionType = 'root' | 'first' | 'second' | 'third'
 
-export type TuningId = 'e_standard' | 'd_standard' | 'c_standard' | 'b_standard' | 'a_standard'
+export type InstrumentType = 'guitar' | 'bass'
+
+export type TuningId =
+  | 'e_standard' | 'd_standard' | 'c_standard' | 'b_standard' | 'a_standard'
+  | 'bass_standard' | 'bass_bb_standard' | 'bass_d_standard' | 'bass_c_standard' | 'bass_b_standard'
 
 export interface Tuning {
   id: TuningId

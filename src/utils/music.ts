@@ -22,14 +22,23 @@ export const STANDARD_TUNING: Note[] = ['E', 'A', 'D', 'G', 'B', 'E']
 
 // All available tunings
 export const TUNINGS: Record<TuningId, Tuning> = {
-  e_standard: { id: 'e_standard', name: 'E Standard', notes: ['E', 'A', 'D', 'G', 'B', 'E'] },
-  d_standard: { id: 'd_standard', name: 'D Standard', notes: ['D', 'G', 'C', 'F', 'A', 'D'] },
-  c_standard: { id: 'c_standard', name: 'C Standard', notes: ['C', 'F', 'A#', 'D#', 'G', 'C'] },
-  b_standard: { id: 'b_standard', name: 'B Standard', notes: ['B', 'E', 'A', 'D', 'F#', 'B'] },
-  a_standard: { id: 'a_standard', name: 'A#/Bb Standard', notes: ['A#', 'D#', 'G#', 'C#', 'F', 'A#'] },
+  // Guitar
+  e_standard:      { id: 'e_standard',      name: 'E Standard',      notes: ['E', 'A', 'D', 'G', 'B', 'E'] },
+  d_standard:      { id: 'd_standard',      name: 'D Standard',      notes: ['D', 'G', 'C', 'F', 'A', 'D'] },
+  c_standard:      { id: 'c_standard',      name: 'C Standard',      notes: ['C', 'F', 'A#', 'D#', 'G', 'C'] },
+  b_standard:      { id: 'b_standard',      name: 'B Standard',      notes: ['B', 'E', 'A', 'D', 'F#', 'B'] },
+  a_standard:      { id: 'a_standard',      name: 'A#/Bb Standard',  notes: ['A#', 'D#', 'G#', 'C#', 'F', 'A#'] },
+  // Bass
+  bass_standard:   { id: 'bass_standard',   name: 'E Standard',      notes: ['E', 'A', 'D', 'G'] },
+  bass_bb_standard: { id: 'bass_bb_standard', name: 'A#/Bb Standard',  notes: ['A#', 'D#', 'G#', 'C#'] },
+  bass_d_standard: { id: 'bass_d_standard', name: 'D Standard',      notes: ['D', 'G', 'C', 'F'] },
+  bass_c_standard: { id: 'bass_c_standard', name: 'C Standard',      notes: ['C', 'F', 'A#', 'D#'] },
+  bass_b_standard: { id: 'bass_b_standard', name: 'B Standard',      notes: ['B', 'E', 'A', 'D'] },
 }
 
-export const TUNING_IDS: TuningId[] = ['e_standard', 'd_standard', 'c_standard', 'b_standard', 'a_standard']
+export const GUITAR_TUNING_IDS: TuningId[] = ['e_standard', 'd_standard', 'c_standard', 'b_standard', 'a_standard']
+export const BASS_TUNING_IDS: TuningId[] = ['bass_standard', 'bass_d_standard', 'bass_c_standard', 'bass_b_standard', 'bass_bb_standard']
+export const TUNING_IDS: TuningId[] = [...GUITAR_TUNING_IDS, ...BASS_TUNING_IDS]
 
 export const FRET_COUNT = 12
 
@@ -63,18 +72,18 @@ export function getInterval(root: Note, note: Note): Interval {
 }
 
 export const INTERVAL_COLORS: Record<Interval, string> = {
-  unison: '#ef4444',      // red
-  minor2nd: '#f97316',    // orange
-  major2nd: '#fb923c',    // light orange
-  minor3rd: '#facc15',    // yellow
-  major3rd: '#fde047',    // light yellow
-  perfect4th: '#22c55e',  // green
-  tritone: '#06b6d4',     // cyan
-  perfect5th: '#3b82f6',  // blue
-  minor6th: '#6366f1',    // indigo
-  major6th: '#818cf8',    // light indigo
-  minor7th: '#a855f7',    // purple
-  major7th: '#c084fc',    // light purple
+  unison: '#a83030',      // blood red
+  minor2nd: '#a85020',    // rust
+  major2nd: '#a86030',    // burnt orange
+  minor3rd: '#988010',    // tarnished gold
+  major3rd: '#b09820',    // pale ochre
+  perfect4th: '#286840',  // swamp green
+  tritone: '#187888',     // dark teal
+  perfect5th: '#2850a0',  // cold steel blue
+  minor6th: '#404898',    // slate
+  major6th: '#505898',    // muted indigo
+  minor7th: '#683888',    // dark violet
+  major7th: '#784898',    // dim purple
 }
 
 export const INTERVAL_LABELS: Record<Interval, string> = {
@@ -905,11 +914,11 @@ export interface CAGEDShapeInfo {
 }
 
 export const CAGED_SHAPES: Record<CAGEDShape, CAGEDShapeInfo> = {
-  E: { name: 'E', primaryString: 6, rootOffset: 0, fretSpan: 4, color: '#ef4444' },  // red
-  G: { name: 'G', primaryString: 6, rootOffset: 3, fretSpan: 4, color: '#22c55e' },  // green
-  D: { name: 'D', primaryString: 4, rootOffset: 0, fretSpan: 4, color: '#3b82f6' },  // blue
-  C: { name: 'C', primaryString: 5, rootOffset: 3, fretSpan: 4, color: '#facc15' },  // yellow
-  A: { name: 'A', primaryString: 5, rootOffset: 0, fretSpan: 4, color: '#a855f7' },  // purple
+  E: { name: 'E', primaryString: 6, rootOffset: 0, fretSpan: 4, color: '#a83030' },  // blood red
+  G: { name: 'G', primaryString: 6, rootOffset: 3, fretSpan: 4, color: '#286840' },  // swamp green
+  D: { name: 'D', primaryString: 4, rootOffset: 0, fretSpan: 4, color: '#2850a0' },  // steel blue
+  C: { name: 'C', primaryString: 5, rootOffset: 3, fretSpan: 4, color: '#988010' },  // tarnished gold
+  A: { name: 'A', primaryString: 5, rootOffset: 0, fretSpan: 4, color: '#683888' },  // dark violet
 }
 
 export const CAGED_SHAPE_ORDER: CAGEDShape[] = ['C', 'A', 'G', 'E', 'D']

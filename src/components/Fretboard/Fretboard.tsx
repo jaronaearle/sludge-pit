@@ -35,39 +35,39 @@ const DOUBLE_DOT_FRETS = [12, 24]
 
 // Colors for scale degrees (1-7)
 const SCALE_DEGREE_COLORS: Record<number, string> = {
-  1: '#ef4444', // Root - red
-  2: '#fb923c', // 2nd - orange
-  3: '#facc15', // 3rd - yellow
-  4: '#22c55e', // 4th - green
-  5: '#3b82f6', // 5th - blue
-  6: '#818cf8', // 6th - indigo
-  7: '#c084fc', // 7th - purple
+  1: '#a83030', // Root - blood red
+  2: '#a86030', // 2nd - burnt orange
+  3: '#988010', // 3rd - tarnished gold
+  4: '#286840', // 4th - swamp green
+  5: '#2850a0', // 5th - cold steel blue
+  6: '#505898', // 6th - muted indigo
+  7: '#684898', // 7th - dim purple
 }
 
 // Colors for triad degrees (Root, 3rd, 5th)
 const TRIAD_DEGREE_COLORS: Record<number, string> = {
-  1: '#ef4444', // Root - red
-  2: '#facc15', // 3rd - yellow
-  3: '#3b82f6', // 5th - blue
+  1: '#a83030', // Root - blood red
+  2: '#988010', // 3rd - tarnished gold
+  3: '#2850a0', // 5th - cold steel blue
 }
 
 // Colors for 7th chord degrees (Root, 3rd, 5th, 7th)
 const SEVENTH_CHORD_DEGREE_COLORS: Record<number, string> = {
-  1: '#ef4444', // Root - red
-  2: '#facc15', // 3rd - yellow
-  3: '#3b82f6', // 5th - blue
-  4: '#c084fc', // 7th - purple
+  1: '#a83030', // Root - blood red
+  2: '#988010', // 3rd - tarnished gold
+  3: '#2850a0', // 5th - cold steel blue
+  4: '#684898', // 7th - dim purple
 }
 
 // Colors for extended chord degrees (Root, 3rd, 5th, 7th, 9th, 11th, 13th)
 const EXTENDED_CHORD_DEGREE_COLORS: Record<number, string> = {
-  1: '#ef4444', // Root - red
-  2: '#facc15', // 3rd - yellow
-  3: '#3b82f6', // 5th - blue
-  4: '#c084fc', // 7th - purple
-  5: '#fb923c', // 9th - orange
-  6: '#22c55e', // 11th - green
-  7: '#818cf8', // 13th - indigo
+  1: '#a83030', // Root - blood red
+  2: '#988010', // 3rd - tarnished gold
+  3: '#2850a0', // 5th - cold steel blue
+  4: '#684898', // 7th - dim purple
+  5: '#a86030', // 9th - burnt orange
+  6: '#286840', // 11th - swamp green
+  7: '#505898', // 13th - muted indigo
 }
 
 export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, selectedIntervals, scaleType, dyadType, triadType, seventhChordType, extendedChordType, modeType, inversionType, tuning, fretCount, showCAGED = false, cagedShape = 'all', scalePosition = 'all', singleStringMode = false, selectedString = 6, label, compact = false, detectionMode = false, detectionFrets = [], onDetectionFretToggle }: FretboardProps) {

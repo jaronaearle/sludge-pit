@@ -41,7 +41,7 @@
 }
 
 .keySegment.selected {
-  fill: #3b82f6;
+  fill: #2850a0;
 }
 
 /* Second ring - Sharps */
@@ -57,7 +57,7 @@
 }
 
 .sharpsSelected {
-  fill: #22c55e;
+  fill: #286840;
 }
 
 /* Third ring - Flats */
@@ -73,7 +73,7 @@
 }
 
 .flatsSelected {
-  fill: #f59e0b;
+  fill: #987010;
 }
 
 /* Inner ring - Relative minor */
@@ -89,7 +89,7 @@
 }
 
 .minorSelected {
-  fill: #a855f7;
+  fill: #683888;
 }
 
 /* Labels */

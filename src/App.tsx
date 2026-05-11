@@ -14,6 +14,7 @@ import {
   CAGEDShape,
   ScalePosition,
   StringNumber,
+  InstrumentType,
 } from "./types/music";
 import { Fretboard } from "./components/Fretboard/Fretboard";
 import { Controls } from "./components/Controls/Controls";
@@ -74,6 +75,7 @@ function App() {
     useState<ExtendedChordType>("none");
   const [modeType, setModeType] = useState<ModeType>("none");
   const [inversionType, setInversionType] = useState<InversionType>("root");
+  const [instrument, setInstrument] = useState<InstrumentType>("guitar");
   const [tuningId, setTuningId] = useState<TuningId>("e_standard");
   const [showReference, setShowReference] = useState(false);
   const [fretCount, setFretCount] = useState<FretCount>(12);
@@ -203,6 +205,7 @@ function App() {
     setExtendedChordType("none");
     setModeType("none");
     setInversionType("root");
+    setInstrument("guitar");
     setTuningId("e_standard");
     setShowReference(false);
     setFretCount(12);
@@ -230,7 +233,8 @@ function App() {
   };
 
   const currentTuning = TUNINGS[tuningId];
-  const referenceTuning = TUNINGS["e_standard"];
+  const referenceId = instrument === 'bass' ? 'bass_standard' : 'e_standard';
+  const referenceTuning = TUNINGS[referenceId];
 
   // Handle chord selection from KeyReference (keeps rootNote, only changes chord)
   const handleChordSelect = useCallback((selectedChordRoot: Note, quality: TriadType) => {
@@ -275,8 +279,23 @@ function App() {
           onModeTypeChange={handleModeTypeChange}
           inversionType={inversionType}
           onInversionTypeChange={setInversionType}
+          instrument={instrument}
+          onInstrumentChange={(inst) => {
+            setInstrument(inst);
+            const defaultTuning = inst === 'bass' ? 'bass_standard' : 'e_standard';
+            setTuningId(defaultTuning);
+            const stringCount = TUNINGS[defaultTuning].notes.length as StringNumber;
+            setSelectedString(stringCount);
+            setSingleStringMode(false);
+            setShowReference(false);
+          }}
           tuningId={tuningId}
-          onTuningChange={setTuningId}
+          onTuningChange={(id) => {
+            setTuningId(id);
+            const stringCount = TUNINGS[id].notes.length as StringNumber;
+            setSelectedString(stringCount);
+            setSingleStringMode(false);
+          }}
           showReference={showReference}
           onShowReferenceChange={setShowReference}
           fretCount={fretCount}
@@ -317,7 +336,7 @@ function App() {
           modeType={modeType}
         />
 
-        {showReference && tuningId !== "e_standard" && (
+        {showReference && tuningId !== referenceId && (
           <Fretboard
             rootNote={rootNote}
             chordRoot={chordRoot}

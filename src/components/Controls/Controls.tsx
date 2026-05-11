@@ -14,6 +14,7 @@ import {
   CAGEDShape,
   ScalePosition,
   StringNumber,
+  InstrumentType,
 } from "../../types/music";
 
 // Note: ScalePosition, StringNumber, and getScalePositionCount are kept for future scale position feature
@@ -36,7 +37,8 @@ import {
   INVERSION_TYPES,
   INVERSION_LABELS,
   TUNINGS,
-  TUNING_IDS,
+  GUITAR_TUNING_IDS,
+  BASS_TUNING_IDS,
   supportsInversion,
   CAGED_SHAPE_ORDER,
   CAGED_SHAPES,
@@ -72,6 +74,8 @@ interface ControlsProps {
   onModeTypeChange: (mode: ModeType) => void;
   inversionType: InversionType;
   onInversionTypeChange: (inversion: InversionType) => void;
+  instrument: InstrumentType;
+  onInstrumentChange: (inst: InstrumentType) => void;
   tuningId: TuningId;
   onTuningChange: (tuning: TuningId) => void;
   showReference: boolean;
@@ -122,6 +126,8 @@ export function Controls({
   onModeTypeChange,
   inversionType,
   onInversionTypeChange,
+  instrument,
+  onInstrumentChange,
   tuningId,
   onTuningChange,
   showReference,
@@ -178,13 +184,25 @@ export function Controls({
             </label>
 
             <label className={styles.label}>
+              Instrument:
+              <select
+                className={styles.select}
+                value={instrument}
+                onChange={(e) => onInstrumentChange(e.target.value as InstrumentType)}
+              >
+                <option value="guitar">Guitar</option>
+                <option value="bass">Bass</option>
+              </select>
+            </label>
+
+            <label className={styles.label}>
               Tuning:
               <select
                 className={styles.select}
                 value={tuningId}
                 onChange={(e) => onTuningChange(e.target.value as TuningId)}
               >
-                {TUNING_IDS.map((id) => (
+                {(instrument === 'guitar' ? GUITAR_TUNING_IDS : BASS_TUNING_IDS).map((id) => (
                   <option key={id} value={id}>
                     {TUNINGS[id].name}
                   </option>
@@ -192,18 +210,17 @@ export function Controls({
               </select>
             </label>
 
-            <label
-              className={`${styles.checkboxLabel} ${tuningId === "e_standard" ? styles.disabled : ""}`}
-            >
-              <input
-                type="checkbox"
-                checked={showReference}
-                onChange={(e) => onShowReferenceChange(e.target.checked)}
-                className={styles.checkbox}
-                disabled={tuningId === "e_standard"}
-              />
-              Compare to E standard
-            </label>
+            {tuningId !== (instrument === 'bass' ? 'bass_standard' : 'e_standard') && (
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={showReference}
+                  onChange={(e) => onShowReferenceChange(e.target.checked)}
+                  className={styles.checkbox}
+                />
+                Compare to E standard
+              </label>
+            )}
 
             <label className={styles.label}>
               Frets:
@@ -235,15 +252,18 @@ export function Controls({
                 }}
               >
                 <option value={0}>All</option>
-                {([6, 5, 4, 3, 2, 1] as StringNumber[]).map((str) => {
+                {(() => {
                   const tuningNotes = TUNINGS[tuningId].notes;
-                  const note = tuningNotes[6 - str];
-                  return (
-                    <option key={str} value={str}>
-                      {str} ({getNoteDisplay(note)})
-                    </option>
-                  );
-                })}
+                  const stringCount = tuningNotes.length;
+                  return (Array.from({ length: stringCount }, (_, i) => stringCount - i) as StringNumber[]).map((str) => {
+                    const note = tuningNotes[stringCount - str];
+                    return (
+                      <option key={str} value={str}>
+                        {str} ({getNoteDisplay(note)})
+                      </option>
+                    );
+                  });
+                })()}
               </select>
             </label>
           </div>
