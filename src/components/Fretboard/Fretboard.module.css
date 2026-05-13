@@ -176,6 +176,12 @@
   border-radius: 4px;
 }
 
+/* Key root is never dimmed — .hasContext .chordTone overrides this when root is also a chord tone */
+.hasContext .rootNote {
+  filter: none;
+  opacity: 1;
+}
+
 /* Chord tones (R, 3rd, 5th, 7th) — square, larger, glowing */
 .chordTone {
   min-width: 34px;
