@@ -3,8 +3,8 @@
   flex-direction: column;
   gap: 8px;
   padding: 10px 12px;
-  background: #1a1a1a;
-  border: 1px solid #2d2d2d;
+  background: #0e0d14;
+  border: 1px solid #1e1c2c;
   border-radius: 6px;
   margin-top: 10px;
 }
@@ -39,7 +39,7 @@
 .progressTrack {
   flex: 1;
   height: 4px;
-  background: #333;
+  background: #1e1c2c;
   border-radius: 2px;
   cursor: pointer;
   transition: height 0.1s;
@@ -56,7 +56,7 @@
 
 .time {
   font-size: 11px;
-  color: #666;
+  color: #4a4860;
   font-family: monospace;
   flex-shrink: 0;
   min-width: 60px;
@@ -65,7 +65,7 @@
 
 .key {
   font-size: 11px;
-  color: #888;
+  color: #6a6880;
   flex-shrink: 0;
 }
 
