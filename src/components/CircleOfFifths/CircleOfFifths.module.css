@@ -3,16 +3,20 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background: #1e1e1e;
+  background: #0e0d14;
   border-radius: 8px;
   margin-top: 20px;
+  border: 1px solid #1e1c2c;
 }
 
 .title {
   margin: 0 0 16px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  color: #e0e0e0;
+  color: #9a8ab0;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
 .svg {
@@ -30,66 +34,66 @@
 
 /* Outer ring - Major keys */
 .keySegment {
-  fill: #2d4a6d;
-  stroke: #1e1e1e;
+  fill: #0d1840;
+  stroke: #09080d;
   stroke-width: 2;
   transition: fill 0.2s;
 }
 
 .keySegment:hover {
-  fill: #3d5a7d;
+  fill: #151f55;
 }
 
 .keySegment.selected {
-  fill: #2850a0;
+  fill: #102065;
 }
 
 /* Second ring - Sharps */
 .sharpsSegment {
-  fill: #4a5c3a;
-  stroke: #1e1e1e;
+  fill: #0d2c18;
+  stroke: #09080d;
   stroke-width: 2;
   transition: fill 0.2s;
 }
 
 .sharpsSegment:hover {
-  fill: #5a6c4a;
+  fill: #123820;
 }
 
 .sharpsSelected {
-  fill: #286840;
+  fill: #0d4220;
 }
 
 /* Third ring - Flats */
 .flatsSegment {
-  fill: #5c4a3a;
-  stroke: #1e1e1e;
+  fill: #2a1a00;
+  stroke: #09080d;
   stroke-width: 2;
   transition: fill 0.2s;
 }
 
 .flatsSegment:hover {
-  fill: #6c5a4a;
+  fill: #382200;
 }
 
 .flatsSelected {
-  fill: #987010;
+  fill: #5a4800;
 }
 
 /* Inner ring - Relative minor */
 .minorSegment {
-  fill: #4a3a5c;
-  stroke: #1e1e1e;
+  fill: #1e0840;
+  stroke: #09080d;
   stroke-width: 2;
   transition: fill 0.2s;
 }
 
 .minorSegment:hover {
-  fill: #5a4a6c;
+  fill: #280a55;
 }
 
 .minorSelected {
-  fill: #683888;
+  fill: #450080;
 }
 
 /* Labels */
@@ -97,6 +101,7 @@
   fill: #c0d0e0;
   font-size: 14px;
   font-weight: 600;
+  font-family: 'Cinzel', serif;
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
@@ -113,6 +118,7 @@
   fill: #b0d0a0;
   font-size: 13px;
   font-weight: 600;
+  font-family: 'Cinzel', serif;
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
@@ -123,6 +129,7 @@
   fill: #e0c0a0;
   font-size: 13px;
   font-weight: 600;
+  font-family: 'Cinzel', serif;
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
@@ -133,6 +140,7 @@
   fill: #c0b0d0;
   font-size: 12px;
   font-weight: 500;
+  font-family: 'Cinzel', serif;
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
@@ -144,8 +152,8 @@
 }
 
 .centerCircle {
-  fill: #121212;
-  stroke: #404040;
+  fill: #09080d;
+  stroke: #1e1c2c;
   stroke-width: 2;
 }
 
@@ -170,26 +178,26 @@
   width: 12px;
   height: 12px;
   border-radius: 2px;
-  background: #2d4a6d;
+  background: #0d1840;
 }
 
 .sharpsDot {
   width: 12px;
   height: 12px;
   border-radius: 2px;
-  background: #4a5c3a;
+  background: #0d2c18;
 }
 
 .flatsDot {
   width: 12px;
   height: 12px;
   border-radius: 2px;
-  background: #5c4a3a;
+  background: #2a1a00;
 }
 
 .minorDot {
   width: 12px;
   height: 12px;
   border-radius: 2px;
-  background: #4a3a5c;
+  background: #1e0840;
 }

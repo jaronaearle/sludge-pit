@@ -8,8 +8,9 @@
 /* Top Section - Always Visible */
 .topSection {
   padding: 16px;
-  background: #1e1e1e;
+  background: #0e0d14;
   border-radius: 8px;
+  border: 1px solid #1e1c2c;
 }
 
 .topRow {
@@ -48,15 +49,15 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #e0e0e0;
+  color: #c0b8d0;
 }
 
 .select {
   padding: 8px 12px;
   font-size: 14px;
-  background: #2d2d2d;
-  color: #e0e0e0;
-  border: 1px solid #404040;
+  background: #12101c;
+  color: #c0b8d0;
+  border: 1px solid #252238;
   border-radius: 4px;
   cursor: pointer;
   min-width: 140px;
@@ -65,9 +66,9 @@
 .selectSmall {
   padding: 8px 12px;
   font-size: 14px;
-  background: #2d2d2d;
-  color: #e0e0e0;
-  border: 1px solid #404040;
+  background: #12101c;
+  color: #c0b8d0;
+  border: 1px solid #252238;
   border-radius: 4px;
   cursor: pointer;
   min-width: 70px;
@@ -75,24 +76,24 @@
 
 .select:hover,
 .selectSmall:hover {
-  border-color: #555;
+  border-color: #302e48;
 }
 
 .select:focus,
 .selectSmall:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: #6a50a0;
 }
 
 .select option,
 .selectSmall option {
-  background: #2d2d2d;
-  color: #e0e0e0;
+  background: #12101c;
+  color: #c0b8d0;
 }
 
 .select:disabled,
 .selectSmall:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
@@ -102,20 +103,20 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #b0b0b0;
+  color: #9a90b0;
   cursor: pointer;
   user-select: none;
 }
 
 .checkboxLabel.disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 .checkbox {
   width: 16px;
   height: 16px;
-  accent-color: #3b82f6;
+  accent-color: #6a50a0;
   cursor: pointer;
 }
 
@@ -128,27 +129,27 @@
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
-  background: #404040;
-  color: #e0e0e0;
-  border: 1px solid #555;
+  background: #13111c;
+  color: #9a90b0;
+  border: 1px solid #252238;
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
 }
 
 .resetButton:hover {
-  background: #505050;
-  border-color: #666;
+  background: #1c1a28;
+  border-color: #302e48;
 }
 
 .resetButton:active {
-  background: #383838;
+  background: #0e0c16;
 }
 
 /* Hint Text */
 .hint {
   font-size: 11px;
-  color: #666;
+  color: #4a4060;
   font-style: italic;
 }
 
@@ -165,39 +166,39 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #b0b0b0;
+  color: #9a90b0;
   cursor: pointer;
   user-select: none;
 }
 
 .intervalCheckbox:hover {
-  color: #e0e0e0;
+  color: #c0b8d0;
 }
 
 /* Clear Button */
 .clearButton {
   padding: 6px 12px;
   font-size: 12px;
-  background: #333;
-  color: #999;
-  border: 1px solid #444;
+  background: #12101c;
+  color: #6a6080;
+  border: 1px solid #1e1c2c;
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
 }
 
 .clearButton:hover {
-  background: #404040;
-  color: #e0e0e0;
+  background: #181724;
+  color: #c0b8d0;
 }
 
 /* Section Reset Button */
 .sectionResetButton {
   padding: 4px 10px;
   font-size: 11px;
-  background: #333;
-  color: #888;
-  border: 1px solid #444;
+  background: #12101c;
+  color: #5a5070;
+  border: 1px solid #1e1c2c;
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
@@ -205,8 +206,8 @@
 }
 
 .sectionResetButton:hover {
-  background: #404040;
-  color: #e0e0e0;
+  background: #181724;
+  color: #c0b8d0;
 }
 
 /* Notation Guide Button */
@@ -277,4 +278,45 @@
 
 .correctionButton:active {
   background: #152030;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* 2. Stack the two groups vertically */
+  .topRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .group {
+    gap: 10px;
+  }
+
+  /* 1. Prevent iOS auto-zoom on select focus */
+  .select,
+  .selectSmall {
+    font-size: 16px;
+  }
+
+  /* 4. Comfortable tap targets for checkboxes and their labels */
+  .checkboxLabel,
+  .intervalCheckbox {
+    min-height: 44px;
+    gap: 10px;
+  }
+
+  .checkbox {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  /* Give buttons a bit more breathing room */
+  .resetButton,
+  .guideButton,
+  .detectButton {
+    padding: 10px 16px;
+    min-height: 44px;
+  }
 }

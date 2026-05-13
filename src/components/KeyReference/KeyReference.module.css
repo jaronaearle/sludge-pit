@@ -1,16 +1,18 @@
 .keyReference {
-  background: #1e1e1e;
+  background: #0e0d14;
   border-radius: 8px;
   padding: 16px 20px;
   margin-bottom: 20px;
+  border: 1px solid #1e1c2c;
 }
 
 .title {
   font-size: 12px;
   font-weight: 600;
-  color: #888;
+  color: #7a7090;
+  font-family: 'Cinzel', serif;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 2px;
   margin-bottom: 12px;
 }
 
@@ -29,7 +31,7 @@
   width: 80px;
   font-size: 13px;
   font-weight: 600;
-  color: #e0e0e0;
+  color: #c8c0d8;
   flex-shrink: 0;
 }
 
@@ -45,14 +47,15 @@
   align-items: center;
   min-width: 44px;
   padding: 6px 8px;
-  background: #2a2a2a;
+  background: #13111c;
   border-radius: 6px;
+  border: 1px solid #1e1c2c;
 }
 
 .romanNumeral {
   font-size: 11px;
   font-weight: 500;
-  color: #888;
+  color: #4a4860;
   margin-bottom: 2px;
 }
 
@@ -65,23 +68,23 @@
 
 /* Chord quality colors */
 .major {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.15);
+  color: #c84040;
+  background: rgba(200, 64, 64, 0.12);
 }
 
 .minor {
-  color: #3b82f6;
-  background: rgba(59, 130, 246, 0.15);
+  color: #4a70c0;
+  background: rgba(74, 112, 192, 0.12);
 }
 
 .diminished {
-  color: #facc15;
-  background: rgba(250, 204, 21, 0.15);
+  color: #c8a820;
+  background: rgba(200, 168, 32, 0.12);
 }
 
 .augmented {
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.15);
+  color: #208050;
+  background: rgba(32, 128, 80, 0.12);
 }
 
 /* Interactive states */
@@ -92,18 +95,18 @@
 
 .clickable:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .selected {
-  outline: 2px solid #fff;
+  outline: 2px solid rgba(200, 168, 32, 0.6);
   outline-offset: 2px;
 }
 
 .hint {
   font-weight: 400;
   font-size: 10px;
-  color: #666;
+  color: #3a3850;
   text-transform: none;
   letter-spacing: normal;
 }

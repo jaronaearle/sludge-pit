@@ -243,3 +243,11 @@
 .doneButton:hover {
   background: #166534;
 }
+
+@media (max-width: 640px) {
+  /* 1. Prevent iOS auto-zoom on input/textarea focus */
+  .textarea,
+  .input {
+    font-size: 16px;
+  }
+}

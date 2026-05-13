@@ -1,8 +1,8 @@
 .section {
-  border: 1px solid #333;
+  border: 1px solid #1e1c2c;
   border-radius: 8px;
   overflow: hidden;
-  background: #1a1a1a;
+  background: #0e0d14;
 }
 
 .header {
@@ -11,27 +11,28 @@
   align-items: center;
   width: 100%;
   padding: 12px 16px;
-  background: #252525;
+  background: #13111c;
   border: none;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .header:hover {
-  background: #2a2a2a;
+  background: #181628;
 }
 
 .title {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
-  color: #e0e0e0;
+  color: #7a7090;
+  font-family: 'Cinzel', serif;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 2px;
 }
 
 .chevron {
   font-size: 10px;
-  color: #888;
+  color: #3a3850;
   transition: transform 0.2s;
 }
 
@@ -44,5 +45,5 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  border-top: 1px solid #333;
+  border-top: 1px solid #1e1c2c;
 }

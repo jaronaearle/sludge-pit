@@ -72,18 +72,18 @@ export function getInterval(root: Note, note: Note): Interval {
 }
 
 export const INTERVAL_COLORS: Record<Interval, string> = {
-  unison: '#a83030',      // blood red
-  minor2nd: '#a85020',    // rust
-  major2nd: '#a86030',    // burnt orange
-  minor3rd: '#988010',    // tarnished gold
-  major3rd: '#b09820',    // pale ochre
-  perfect4th: '#286840',  // swamp green
-  tritone: '#187888',     // dark teal
-  perfect5th: '#2850a0',  // cold steel blue
-  minor6th: '#404898',    // slate
-  major6th: '#505898',    // muted indigo
-  minor7th: '#683888',    // dark violet
-  major7th: '#784898',    // dim purple
+  unison: '#9a0000',      // blood crimson
+  minor2nd: '#7d1500',    // dark rust
+  major2nd: '#6b3200',    // deep ember
+  minor3rd: '#605500',    // shadow ochre
+  major3rd: '#736500',    // ancient gold
+  perfect4th: '#0d4220',  // shadow forest
+  tritone: '#0a3c3c',     // the abyss
+  perfect5th: '#102065',  // prussian night
+  minor6th: '#200a72',    // deep indigo
+  major6th: '#30087a',    // violet depths
+  minor7th: '#450080',    // sorcerer's purple
+  major7th: '#5a0090',    // elder violet
 }
 
 export const INTERVAL_LABELS: Record<Interval, string> = {
@@ -914,11 +914,11 @@ export interface CAGEDShapeInfo {
 }
 
 export const CAGED_SHAPES: Record<CAGEDShape, CAGEDShapeInfo> = {
-  E: { name: 'E', primaryString: 6, rootOffset: 0, fretSpan: 4, color: '#a83030' },  // blood red
-  G: { name: 'G', primaryString: 6, rootOffset: 3, fretSpan: 4, color: '#286840' },  // swamp green
-  D: { name: 'D', primaryString: 4, rootOffset: 0, fretSpan: 4, color: '#2850a0' },  // steel blue
-  C: { name: 'C', primaryString: 5, rootOffset: 3, fretSpan: 4, color: '#988010' },  // tarnished gold
-  A: { name: 'A', primaryString: 5, rootOffset: 0, fretSpan: 4, color: '#683888' },  // dark violet
+  E: { name: 'E', primaryString: 6, rootOffset: 0, fretSpan: 4, color: '#9a0000' },  // blood crimson
+  G: { name: 'G', primaryString: 6, rootOffset: 3, fretSpan: 4, color: '#0d4220' },  // shadow forest
+  D: { name: 'D', primaryString: 4, rootOffset: 0, fretSpan: 4, color: '#102065' },  // prussian night
+  C: { name: 'C', primaryString: 5, rootOffset: 3, fretSpan: 4, color: '#736500' },  // ancient gold
+  A: { name: 'A', primaryString: 5, rootOffset: 0, fretSpan: 4, color: '#5a0090' },  // elder violet
 }
 
 export const CAGED_SHAPE_ORDER: CAGEDShape[] = ['C', 'A', 'G', 'E', 'D']

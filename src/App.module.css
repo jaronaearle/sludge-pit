@@ -1,28 +1,32 @@
 .app {
   min-height: 100vh;
-  background: #121212;
-  color: #e0e0e0;
+  background: #09080d;
+  color: #c8c0d8;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
 .header {
   padding: 24px;
   text-align: center;
-  background: #1e1e1e;
-  border-bottom: 1px solid #2d2d2d;
+  background: #0e0d14;
+  border-bottom: 1px solid #1e1c2c;
 }
 
 .title {
   margin: 0;
   font-size: 28px;
   font-weight: 700;
-  color: #ffffff;
+  color: #c8a820;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px rgba(200, 168, 32, 0.3);
 }
 
 .subtitle {
   margin: 8px 0 0;
-  font-size: 14px;
-  color: #888;
+  font-size: 13px;
+  color: #504e60;
+  letter-spacing: 0.5px;
 }
 
 .main {
@@ -34,10 +38,10 @@
 .footer {
   text-align: center;
   padding: 20px 24px;
-  color: #fff;
+  color: #504e60;
   font-size: 12px;
-  background: #1e1e1e;
-  border-top: 1px solid #2d2d2d;
+  background: #0e0d14;
+  border-top: 1px solid #1e1c2c;
   margin-top: 40px;
   display: flex;
   flex-direction: column;
@@ -48,7 +52,7 @@
 .correctionButton {
   background: none;
   border: none;
-  color: #555;
+  color: #3a3850;
   font-size: 11px;
   cursor: pointer;
   text-decoration: underline;
@@ -58,7 +62,7 @@
 }
 
 .correctionButton:hover {
-  color: #888;
+  color: #7a7890;
 }
 
 /* Global reset */
@@ -69,5 +73,5 @@
 :global(body) {
   margin: 0;
   padding: 0;
-  background: #121212;
+  background: #09080d;
 }
