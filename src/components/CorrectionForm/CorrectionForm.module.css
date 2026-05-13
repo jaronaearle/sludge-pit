@@ -66,6 +66,37 @@
   gap: 18px;
 }
 
+.typeSelector {
+  display: flex;
+  gap: 6px;
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.typeButton {
+  flex: 1;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  background: transparent;
+  color: #666;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.typeButton:hover {
+  color: #aaa;
+}
+
+.typeButtonActive {
+  background: #1e293b;
+  color: #e0e0e0;
+}
+
 .field {
   display: flex;
   flex-direction: column;

@@ -87,7 +87,9 @@ function App() {
   const [chordProgressionsResetKey, setChordProgressionsResetKey] = useState(0);
   const [practiceActive, setPracticeActive] = useState(false);
   const [detectionMode, setDetectionMode] = useState(false);
-  const [detectionFrets, setDetectionFrets] = useState<{ string: StringNumber; fret: number; note: Note }[]>([]);
+  const [detectionFrets, setDetectionFrets] = useState<
+    { string: StringNumber; fret: number; note: Note }[]
+  >([]);
   const [showCorrectionForm, setShowCorrectionForm] = useState(false);
 
   // Clear chords when selecting a scale
@@ -221,32 +223,41 @@ function App() {
   };
 
   const toggleDetectionMode = () => {
-    setDetectionMode(prev => !prev);
+    setDetectionMode((prev) => !prev);
     setDetectionFrets([]);
   };
 
-  const handleDetectionFretToggle = (string: StringNumber, fret: number, note: Note) => {
-    setDetectionFrets(prev => {
-      const idx = prev.findIndex(f => f.string === string && f.fret === fret);
-      return idx >= 0 ? prev.filter((_, i) => i !== idx) : [...prev, { string, fret, note }];
+  const handleDetectionFretToggle = (
+    string: StringNumber,
+    fret: number,
+    note: Note,
+  ) => {
+    setDetectionFrets((prev) => {
+      const idx = prev.findIndex((f) => f.string === string && f.fret === fret);
+      return idx >= 0
+        ? prev.filter((_, i) => i !== idx)
+        : [...prev, { string, fret, note }];
     });
   };
 
   const currentTuning = TUNINGS[tuningId];
-  const referenceId = instrument === 'bass' ? 'bass_standard' : 'e_standard';
+  const referenceId = instrument === "bass" ? "bass_standard" : "e_standard";
   const referenceTuning = TUNINGS[referenceId];
 
   // Handle chord selection from KeyReference (keeps rootNote, only changes chord)
-  const handleChordSelect = useCallback((selectedChordRoot: Note, quality: TriadType) => {
-    setChordRoot(selectedChordRoot);
-    setTriadType(quality);
-    setDyadType("none");
-    setSeventhChordType("none");
-    setExtendedChordType("none");
-    setScaleType("none");
-    setModeType("none");
-    setInversionType("root");
-  }, []);
+  const handleChordSelect = useCallback(
+    (selectedChordRoot: Note, quality: TriadType) => {
+      setChordRoot(selectedChordRoot);
+      setTriadType(quality);
+      setDyadType("none");
+      setSeventhChordType("none");
+      setExtendedChordType("none");
+      setScaleType("none");
+      setModeType("none");
+      setInversionType("root");
+    },
+    [],
+  );
 
   return (
     <div className={styles.app}>
@@ -282,9 +293,11 @@ function App() {
           instrument={instrument}
           onInstrumentChange={(inst) => {
             setInstrument(inst);
-            const defaultTuning = inst === 'bass' ? 'bass_standard' : 'e_standard';
+            const defaultTuning =
+              inst === "bass" ? "bass_standard" : "e_standard";
             setTuningId(defaultTuning);
-            const stringCount = TUNINGS[defaultTuning].notes.length as StringNumber;
+            const stringCount = TUNINGS[defaultTuning].notes
+              .length as StringNumber;
             setSelectedString(stringCount);
             setSingleStringMode(false);
             setShowReference(false);
@@ -410,8 +423,11 @@ function App() {
 
       <footer className={styles.footer}>
         <div>Made with ❤️ by Jar</div>
-        <button className={styles.correctionButton} onClick={() => setShowCorrectionForm(true)}>
-          Report a correction
+        <button
+          className={styles.correctionButton}
+          onClick={() => setShowCorrectionForm(true)}
+        >
+          Feedback & Corrections
         </button>
       </footer>
 
