@@ -42,8 +42,7 @@ export function ScaleReference({ rootNote, scaleType, modeType }: ScaleReference
         degree: index + 1,
         note,
         intervalName: SEMITONE_TO_INTERVAL[pattern[index]],
-        isChordTone: pattern[index] === 0 || pattern[index] === 4 || pattern[index] === 3 ||
-                     pattern[index] === 7 || pattern[index] === 10 || pattern[index] === 11,
+        isChordTone: index % 2 === 0,
       }))
 
   // Get interval formula
