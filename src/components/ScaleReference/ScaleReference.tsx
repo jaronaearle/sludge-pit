@@ -1,5 +1,5 @@
 import { Note, ScaleType, ModeType } from '../../types/music'
-import { getScaleNotes, getScaleDegreeInfo, getScaleIntervalFormula, SCALE_LABELS, getModeNotes, MODE_LABELS, MODE_PATTERNS, SCALE_PATTERNS, getNoteDisplay } from '../../utils/music'
+import { getScaleNotes, getScaleDegreeInfo, getScaleIntervalFormula, SCALE_LABELS, getModeNotes, MODE_LABELS, MODE_PATTERNS, SCALE_PATTERNS, MODE_CHARACTERISTIC_DEGREES, getNoteDisplay } from '../../utils/music'
 import styles from './ScaleReference.module.css'
 
 interface ScaleReferenceProps {
@@ -36,13 +36,18 @@ export function ScaleReference({ rootNote, scaleType, modeType }: ScaleReference
   const pattern = isScale ? SCALE_PATTERNS[scaleType] : MODE_PATTERNS[modeType as Exclude<ModeType, 'none'>]
 
   // Get degree info
+  const characteristicDegrees = !isScale && modeType !== 'none'
+    ? MODE_CHARACTERISTIC_DEGREES[modeType as Exclude<ModeType, 'none'>]
+    : []
+
   const degreeInfo = isScale
-    ? getScaleDegreeInfo(rootNote, scaleType)
+    ? getScaleDegreeInfo(rootNote, scaleType).map(info => ({ ...info, isCharacteristic: false }))
     : notes.map((note, index) => ({
         degree: index + 1,
         note,
         intervalName: SEMITONE_TO_INTERVAL[pattern[index]],
         isChordTone: index % 2 === 0,
+        isCharacteristic: characteristicDegrees.includes(index + 1),
       }))
 
   // Get interval formula
@@ -75,7 +80,11 @@ export function ScaleReference({ rootNote, scaleType, modeType }: ScaleReference
         {degreeInfo.map((info, index) => (
           <div
             key={index}
-            className={`${styles.noteColumn} ${info.isChordTone ? styles.chordTone : ''}`}
+            className={[
+              styles.noteColumn,
+              info.isCharacteristic ? styles.characteristicNote : '',
+              info.isChordTone && !info.isCharacteristic ? styles.chordTone : '',
+            ].filter(Boolean).join(' ')}
           >
             <span className={styles.degree}>{info.degree}</span>
             <span className={styles.noteName}>{getNoteDisplay(info.note)}</span>
@@ -89,6 +98,12 @@ export function ScaleReference({ rootNote, scaleType, modeType }: ScaleReference
           <span className={styles.chordToneIndicator}></span>
           Chord tones (R, 3, 5, 7)
         </span>
+        {characteristicDegrees.length > 0 && (
+          <span className={styles.legendItem}>
+            <span className={styles.characteristicIndicator}></span>
+            Characteristic note
+          </span>
+        )}
       </div>
     </div>
   )

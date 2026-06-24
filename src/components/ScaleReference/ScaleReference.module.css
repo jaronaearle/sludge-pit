@@ -55,6 +55,11 @@
   background: rgba(154, 0, 0, 0.1);
 }
 
+.noteColumn.characteristicNote {
+  border-color: rgba(251, 191, 36, 0.75);
+  background: rgba(251, 191, 36, 0.07);
+}
+
 .degree {
   font-size: 10px;
   font-weight: 600;
@@ -83,6 +88,14 @@
   color: #8a3030;
 }
 
+.noteColumn.characteristicNote .noteName {
+  color: rgba(251, 191, 36, 0.9);
+}
+
+.noteColumn.characteristicNote .interval {
+  color: rgba(251, 191, 36, 0.6);
+}
+
 .legend {
   margin-top: 12px;
   display: flex;
@@ -103,4 +116,12 @@
   border-radius: 3px;
   border: 2px solid #9a0000;
   background: rgba(154, 0, 0, 0.1);
+}
+
+.characteristicIndicator {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 11px solid rgba(251, 191, 36, 0.8);
 }

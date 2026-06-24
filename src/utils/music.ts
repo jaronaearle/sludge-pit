@@ -509,6 +509,23 @@ export const MODE_TYPES: Exclude<ModeType, 'none'>[] = [
   'locrian',
 ]
 
+// Characteristic degrees (1-indexed) for each mode relative to its baseline:
+// Major modes (Ionian, Lydian, Mixolydian) → compared to Ionian
+// Minor modes (Aeolian, Dorian, Phrygian, Locrian) → compared to Aeolian
+export const MODE_CHARACTERISTIC_DEGREES: Record<Exclude<ModeType, 'none'>, number[]> = {
+  ionian: [],       // baseline major — no alterations
+  lydian: [4],      // ♯4 vs Ionian
+  mixolydian: [7],  // ♭7 vs Ionian
+  aeolian: [],      // baseline minor — no alterations
+  dorian: [6],      // ♮6 (raised vs Aeolian's ♭6)
+  phrygian: [2],    // ♭2 (lowered vs Aeolian's ♮2)
+  locrian: [2, 5],  // ♭2 and ♭5 (both lowered vs Aeolian)
+}
+
+export function isModeCharacteristicDegree(modeType: Exclude<ModeType, 'none'>, degree: number): boolean {
+  return MODE_CHARACTERISTIC_DEGREES[modeType].includes(degree)
+}
+
 // Root notes for the mode backing tracks (all modes of C major — no accidentals)
 export const MODE_TRACK_ROOTS: Record<Exclude<ModeType, 'none'>, Note> = {
   ionian: 'C',

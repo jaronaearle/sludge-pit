@@ -157,6 +157,55 @@
   stroke-width: 2;
 }
 
+/* Hover tooltip */
+.tooltip {
+  position: fixed;
+  background: #16142a;
+  border: 1px solid #3a3860;
+  border-radius: 8px;
+  padding: 10px 14px;
+  pointer-events: none;
+  z-index: 100;
+  min-width: 160px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.tooltipTitle {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Cinzel', serif;
+  color: #ffffff;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.tooltipNone {
+  font-size: 12px;
+  color: #9a8ab0;
+  font-style: italic;
+}
+
+.tooltipAccidentals {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tooltipCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a0b0c0;
+  margin-bottom: 3px;
+}
+
+.tooltipNotes {
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Cinzel', serif;
+  color: #e0e8f0;
+  letter-spacing: 1px;
+}
+
 /* Legend */
 .legend {
   display: flex;

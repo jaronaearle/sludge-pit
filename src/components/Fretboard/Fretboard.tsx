@@ -1,5 +1,5 @@
 import { Note, SelectedIntervals, ScaleType, DyadType, TriadType, SeventhChordType, ExtendedChordType, ModeType, InversionType, Interval, FretCount, CAGEDShape, ScalePosition, StringNumber } from '../../types/music'
-import { getNoteAtFret, getInterval, INTERVAL_COLORS, isNoteInScale, getScaleDegree, isNoteInDyad, getDyadDegree, isNoteInTriad, getTriadDegree, isNoteInSeventhChord, getSeventhChordDegree, isNoteInExtendedChord, getExtendedChordDegree, isNoteInMode, getModeDegree, getInversionBassIndex, getTriadNotes, getSeventhChordNotes, getExtendedChordNotes, CAGED_SHAPES, CAGED_SHAPE_ORDER, getCAGEDShapeFretRange, isFretInScalePosition, getNoteDisplay } from '../../utils/music'
+import { getNoteAtFret, getInterval, INTERVAL_COLORS, isNoteInScale, getScaleDegree, isNoteInDyad, getDyadDegree, isNoteInTriad, getTriadDegree, isNoteInSeventhChord, getSeventhChordDegree, isNoteInExtendedChord, getExtendedChordDegree, isNoteInMode, getModeDegree, isModeCharacteristicDegree, getInversionBassIndex, getTriadNotes, getSeventhChordNotes, getExtendedChordNotes, CAGED_SHAPES, CAGED_SHAPE_ORDER, getCAGEDShapeFretRange, isFretInScalePosition, getNoteDisplay } from '../../utils/music'
 import styles from './Fretboard.module.css'
 
 interface FretboardProps {
@@ -94,6 +94,7 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
     extendedChordDegree: number | null
     isMode: boolean
     modeDegree: number | null
+    isCharacteristic: boolean
     isBassNote: boolean
   }
 
@@ -137,6 +138,7 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
       extendedChordDegree: null as number | null,
       isMode: false,
       modeDegree: null as number | null,
+      isCharacteristic: false,
       isBassNote: false,
     }
 
@@ -152,7 +154,8 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
     if (modeType !== 'none') {
       if (isNoteInMode(note, rootNote, modeType)) {
         const degree = getModeDegree(note, rootNote, modeType)
-        return { ...baseResult, show: true, isRoot: degree === 1, isMode: true, modeDegree: degree }
+        const isCharacteristic = degree !== null && isModeCharacteristicDegree(modeType, degree)
+        return { ...baseResult, show: true, isRoot: degree === 1, isMode: true, modeDegree: degree, isCharacteristic }
       }
     }
 
@@ -255,12 +258,16 @@ export function Fretboard({ rootNote, chordRoot, showAllNotes, showDegrees, sele
       classes.push(styles.rootNote)
     }
 
-    // Chord tones get glow effect
+    // Chord tones get glow effect; characteristic mode notes get amber ring instead
     if (display.isScale && isChordTone(display.scaleDegree)) {
       classes.push(styles.chordTone)
     }
-    if (display.isMode && isChordTone(display.modeDegree)) {
-      classes.push(styles.chordTone)
+    if (display.isMode) {
+      if (display.isCharacteristic) {
+        classes.push(styles.characteristicNote)
+      } else if (isChordTone(display.modeDegree)) {
+        classes.push(styles.chordTone)
+      }
     }
     // All dyad/triad/7th/extended chord notes are chord tones
     if (display.isDyad || display.isTriad || display.isSeventhChord || display.isExtendedChord) {

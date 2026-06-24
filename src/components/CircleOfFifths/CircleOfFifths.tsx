@@ -1,6 +1,24 @@
+import { useState } from 'react'
 import { Note, ScaleType } from '../../types/music'
-import { CIRCLE_OF_FIFTHS_DATA } from '../../utils/music'
+import { CIRCLE_OF_FIFTHS_DATA, CircleOfFifthsKey } from '../../utils/music'
 import styles from './CircleOfFifths.module.css'
+
+const SHARP_ORDER = ['F#', 'C#', 'G#', 'D#', 'A#', 'E#', 'B#']
+const FLAT_ORDER = ['Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 'Fb']
+
+function getAccidentalNotes(data: CircleOfFifthsKey): { type: 'sharp' | 'flat' | 'none'; notes: string[] } {
+  const isFlat = data.key.endsWith('b')
+  if (isFlat && data.flats) {
+    return { type: 'flat', notes: FLAT_ORDER.slice(0, data.flats) }
+  }
+  if (data.sharps) {
+    return { type: 'sharp', notes: SHARP_ORDER.slice(0, data.sharps) }
+  }
+  if (data.flats) {
+    return { type: 'flat', notes: FLAT_ORDER.slice(0, data.flats) }
+  }
+  return { type: 'none', notes: [] }
+}
 
 interface CircleOfFifthsProps {
   selectedRoot: Note
@@ -9,6 +27,9 @@ interface CircleOfFifthsProps {
 }
 
 export function CircleOfFifths({ selectedRoot, onRootSelect, onScaleTypeChange }: CircleOfFifthsProps) {
+  const [hoveredData, setHoveredData] = useState<CircleOfFifthsKey | null>(null)
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
+
   const handleKeySelect = (note: Note) => {
     onRootSelect(note)
     // Automatically show the major scale for the selected key
@@ -91,7 +112,14 @@ export function CircleOfFifths({ selectedRoot, onRootSelect, onScaleTypeChange }
           const minorLabel = getLabelPosition(minorLabelRadius, midAngle)
 
           return (
-            <g key={data.key} onClick={() => handleKeySelect(note)} className={styles.segment}>
+            <g
+              key={data.key}
+              onClick={() => handleKeySelect(note)}
+              className={styles.segment}
+              onMouseEnter={() => setHoveredData(data)}
+              onMouseLeave={() => setHoveredData(null)}
+              onMouseMove={(e) => setTooltipPos({ x: e.clientX, y: e.clientY })}
+            >
               {/* Outer ring - Major key names */}
               <path
                 d={createArcPath(keyOuterRadius, keyInnerRadius, startAngle, endAngle)}
@@ -165,6 +193,33 @@ export function CircleOfFifths({ selectedRoot, onRootSelect, onScaleTypeChange }
         {/* Center circle */}
         <circle cx={center} cy={center} r={48} className={styles.centerCircle} />
       </svg>
+
+      {hoveredData && (() => {
+        const acc = getAccidentalNotes(hoveredData)
+        return (
+          <div
+            className={styles.tooltip}
+            style={{ left: tooltipPos.x + 14, top: tooltipPos.y - 14 }}
+          >
+            <div className={styles.tooltipTitle}>{hoveredData.key} Major</div>
+            {acc.type === 'none' && (
+              <div className={styles.tooltipNone}>No sharps or flats</div>
+            )}
+            {acc.type === 'sharp' && (
+              <div className={styles.tooltipAccidentals}>
+                <span className={styles.tooltipCount}>{acc.notes.length}♯</span>
+                <span className={styles.tooltipNotes}>{acc.notes.join('  ')}</span>
+              </div>
+            )}
+            {acc.type === 'flat' && (
+              <div className={styles.tooltipAccidentals}>
+                <span className={styles.tooltipCount}>{acc.notes.length}♭</span>
+                <span className={styles.tooltipNotes}>{acc.notes.join('  ')}</span>
+              </div>
+            )}
+          </div>
+        )
+      })()}
 
       <div className={styles.legend}>
         <span className={styles.legendItem}>
